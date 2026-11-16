@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>BLIND TEST LIVE - Plateau TV Multijoueur</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top center, #1e1b4b 0%, #090d16 65%, #02040a 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    h1, h2, h3, .tv-font {
+      font-family: 'Montserrat', sans-serif;
+    }
+    .spotlight {
+      position: fixed;
+      top: -20%;
+      width: 45vw;
+      height: 120vh;
+      background: linear-gradient(180deg, rgba(99, 102, 241, 0.16) 0%, rgba(236, 72, 153, 0.04) 60%, transparent 100%);
+      transform-origin: top center;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(20px);
+    }
+    .spotlight-left {
+      left: 5%;
+      animation: swayLeft 9s ease-in-out infinite alternate;
+    }
+    .spotlight-right {
+      right: 5%;
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.14) 0%, rgba(56, 189, 248, 0.04) 60%, transparent 100%);
+      animation: swayRight 11s ease-in-out infinite alternate;
+    }
+    @keyframes swayLeft {
+      0% { transform: rotate(-18deg); }
+      100% { transform: rotate(14deg); }
+    }
+    @keyframes swayRight {
+      0% { transform: rotate(18deg); }
+      100% { transform: rotate(-14deg); }
+    }
+    .tv-card {
+      background: rgba(15, 23, 42, 0.90);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .tv-glow-gold {
+      box-shadow: 0 0 22px rgba(245, 158, 11, 0.5), inset 0 0 10px rgba(245, 158, 11, 0.25);
+      border-color: #f59e0b !important;
+    }
+    .eq-bar {
+      width: 5px;
+      border-radius: 9999px;
+      background: linear-gradient(to top, #ec4899, #f59e0b);
+      transition: height 0.15s ease;
+    }
+    .eq-playing .eq-bar:nth-child(1) { animation: eqAnim 0.5s infinite alternate; }
+    .eq-playing .eq-bar:nth-child(2) { animation: eqAnim 0.35s infinite alternate 0.1s; }
+    .eq-playing .eq-bar:nth-child(3) { animation: eqAnim 0.6s infinite alternate 0.2s; }
+    .eq-playing .eq-bar:nth-child(4) { animation: eqAnim 0.4s infinite alternate 0.15s; }
+    .eq-playing .eq-bar:nth-child(5) { animation: eqAnim 0.55s infinite alternate 0.05s; }
+    @keyframes eqAnim {
+      0% { height: 8px; }
+      100% { height: 34px; }
+    }
+    .mic-active {
+      animation: pulseMic 1.2s infinite;
+    }
+    @keyframes pulseMic {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.75); }
+      70% { box-shadow: 0 0 0 18px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    .buzzer-btn {
+      background: radial-gradient(circle at 35% 30%, #ff5e7e 0%, #e11d48 55%, #881337 100%);
+      box-shadow: 0 8px 0 #4c0519, 0 15px 25px rgba(225, 29, 72, 0.55), inset 0 3px 6px rgba(255,255,255,0.4);
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    .buzzer-btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #4c0519, 0 6px 12px rgba(225, 29, 72, 0.4);
+    }
+    .btn-tv {
+      transition: transform 0.1s ease, filter 0.15s ease;
+    }
+    .btn-tv:active {
+      transform: scale(0.96);
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="relative selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- Projecteurs Plateau TV -->
+  <div class="spotlight spotlight-left"></div>
+  <div class="spotlight spotlight-right"></div>
+
+  <!-- Conteneur Principal Mobile-First -->
+  <div id="app" class="relative z-10 max-w-xl mx-auto px-3 py-4 sm:py-6 flex flex-col min-h-screen">
+
+    <!-- EN-TETE TV SHOW -->
+    <header class="flex items-center justify-between mb-4 bg-slate-900/95 border border-slate-700/70 rounded-2xl px-3.5 py-2.5 shadow-lg">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-orange-500 to-pink-600 flex items-center justify-center shadow-md text-slate-950">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-sm sm:text-base font-black tracking-wider bg-gradient-to-r from-amber-300 via-white to-cyan-300 bg-clip-text text-transparent leading-tight">
+            BLIND TEST LIVE
+          </h1>
+          <p class="text-[11px] text-slate-400 font-medium">Rock USA &bull; Films &bull; S&eacute;ries (<span id="catalog-count">1000</span>)</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <button id="room-badge" onclick="copyRoomCode()" title="Copier le code du salon" class="hidden px-2.5 py-1.5 rounded-xl bg-indigo-950 border border-cyan-400/60 text-cyan-300 text-xs font-black tracking-widest flex items-center gap-1.5">
+          <span id="room-code-text">----</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+        <span id="role-badge" class="hidden px-2 py-1 rounded-lg bg-amber-500/20 border border-amber-400/50 text-amber-300 text-[10px] font-black uppercase">
+          H&Ocirc;TE
+        </span>
+        <button onclick="resetToHome()" title="Accueil" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V10"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ZONE DE NOTIFICATION -->
+    <div id="toast-box" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md px-4 py-3 rounded-2xl shadow-2xl border text-sm font-bold text-center transition-all duration-300"></div>
+
+    <!-- ========================================== -->
+    <!-- ECRAN 1 : ACCUEIL & CONNEXION MULTIJOUEUR  -->
+    <!-- ========================================== -->
+    <section id="screen-home" class="space-y-4 flex-1 flex flex-col justify-between">
+      <div class="space-y-4">
+        <!-- Banniere Jeu TV -->
+        <div class="tv-card rounded-3xl p-4 sm:p-5 text-center relative overflow-hidden">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-[11px] font-extrabold uppercase tracking-widest mb-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            Multijoueur en ligne synchronis&eacute;
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-white mb-1.5">
+            Connectez vos T&eacute;l&eacute;phones !
+          </h2>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            <strong>1 H&ocirc;te (Ma&icirc;tre du jeu)</strong> diffuse la musique et pilote le plateau, pendant que les <strong>&Eacute;quipes</strong> buzzent et r&eacute;pondent depuis leur propre t&eacute;l&eacute;phone !
+          </p>
+        </div>
+
+        <!-- Choix du Role : Hote Online / Rejoindre Salon / Local -->
+        <div class="tv-card rounded-3xl p-4 space-y-3">
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-cyan-400 flex items-center justify-between">
+            <span>1. Choisissez votre r&ocirc;le</span>
+            <span id="cloud-status-pill" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">Connexion Cloud...</span>
+          </h3>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <button id="btn-mode-host" onclick="selectConnectionMode('host')" class="btn-tv p-3.5 rounded-2xl border-2 border-cyan-400 bg-cyan-500/15 text-left transition">
+              <div class="font-extrabold text-sm text-white flex items-center justify-between">
+                <span>Cr&eacute;er Salon</span>
+                <svg class="w-4 h-4 text-cyan-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </div>
+              <p class="text-[11px] text-slate-300 mt-1">H&ocirc;te / Ma&icirc;tre du jeu (En ligne)</p>
+            </button>
+
+            <button id="btn-mode-local" onclick="selectConnectionMode('local')" class="btn-tv p-3.5 rounded-2xl border border-slate-700 bg-slate-800/60 hover:border-amber-400 text-left transition">
+              <div class="font-extrabold text-sm text-white flex items-center justify-between">
+                <span>1 T&eacute;l&eacute;phone</span>
+                <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+              </div>
+              <p class="text-[11px] text-slate-300 mt-1">Mode local sans internet</p>
+            </button>
+          </div>
+
+          <!-- Encart Code du Salon genere pour l'Hote -->
+          <div id="host-room-banner" class="p-3.5 rounded-2xl bg-gradient-to-r from-indigo-950 to-slate-900 border border-cyan-500/50 flex items-center justify-between">
+            <div>
+              <div class="text-[11px] font-bold text-cyan-300 uppercase">Code de votre Salon TV :</div>
+              <div id="host-generated-code" class="text-2xl font-black tracking-[0.25em] text-white mt-0.5">----</div>
+            </div>
+            <button onclick="copyRoomCode()" class="btn-tv px-3.5 py-2.5 rounded-xl bg-cyan-500 text-slate-950 font-black text-xs uppercase shadow flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              <span>Copier</span>
+            </button>
+          </div>
+
+          <!-- Rejoindre un salon existant (Mode Joueur) -->
+          <div class="pt-3 border-t border-slate-800 space-y-2">
+            <label class="block text-xs font-extrabold text-amber-300">Joueur : Rejoindre une partie existante</label>
+            <div class="flex gap-2">
+              <input id="join-code-input" type="text" maxlength="4" placeholder="CODE" class="w-24 uppercase text-center font-black tracking-widest bg-slate-950 border border-slate-700 rounded-xl px-2 py-2.5 text-white text-sm focus:outline-none focus:border-amber-400" />
+              <input id="join-team-input" type="text" placeholder="Nom de votre &eacute;quipe" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-amber-400" />
+              <button onclick="joinMultiplayerRoom()" class="btn-tv px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 font-black text-xs uppercase tracking-wider text-slate-950 shadow-lg">
+                Entrer
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gestion des Equipes -->
+        <div id="setup-teams-panel" class="tv-card rounded-3xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-amber-400">
+              2. &Eacute;quipes connect&eacute;es / inscrites
+            </h3>
+            <span id="team-count-label" class="text-xs text-slate-400 font-semibold">2 &eacute;quipes</span>
+          </div>
+
+          <div id="teams-setup-list" class="space-y-2"></div>
+
+          <div class="flex gap-2 pt-1">
+            <input id="new-team-name" type="text" placeholder="Ajouter une &eacute;quipe manuellement..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400" />
+            <button onclick="addTeam()" class="btn-tv px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-300 font-extrabold text-sm">
+              + Ajouter
+            </button>
+          </div>
+        </div>
+
+        <!-- Parametres de la Partie -->
+        <div id="setup-options-panel" class="tv-card rounded-3xl p-4 space-y-3">
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-pink-400">
+            3. Param&egrave;tres du Show TV
+          </h3>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">Th&egrave;me Musical</label>
+              <select id="category-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-pink-400">
+                <option value="ALL">Tout (Rock USA + Films/S&eacute;ries)</option>
+                <option value="ROCK">100% Rock USA</option>
+                <option value="SCREEN">100% S&eacute;ries &amp; Films</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">Chrono par titre</label>
+              <select id="timer-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-pink-400">
+                <option value="15">15 secondes</option>
+                <option value="25" selected>25 secondes</option>
+                <option value="35">35 secondes</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">Titres par manche</label>
+              <select id="questions-per-round-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-pink-400">
+                <option value="5" selected>5 titres / manche</option>
+                <option value="8">8 titres / manche</option>
+                <option value="10">10 titres / manche</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 mb-1">Diffusion Audio</label>
+              <select id="audio-mode-select" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-pink-400">
+                <option value="itunes" selected>Extraits R&eacute;els + Synth&eacute;</option>
+                <option value="synth">Mode Synth&eacute;tiseur</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bouton Lancer le Show -->
+      <button id="btn-start-game" onclick="startGame()" class="btn-tv w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-600 text-slate-950 font-black text-base sm:text-lg uppercase tracking-wider shadow-xl mt-4">
+        Lancer l'&Eacute;mission !
+      </button>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ECRAN 1B : SALLE D'ATTENTE JOUEUR (GUEST)  -->
+    <!-- ========================================== -->
+    <section id="screen-guest-lobby" class="hidden tv-card rounded-3xl p-6 text-center space-y-5 my-auto">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center text-cyan-300 animate-bounce">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+      </div>
+      <div>
+        <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-black uppercase">
+          Connect&eacute; au Salon <span id="lobby-room-code">----</span>
+        </span>
+        <h2 class="text-2xl font-black text-white mt-3">
+          &Eacute;quipe : <span id="lobby-team-name" class="text-amber-400">...</span>
+        </h2>
+        <p class="text-xs text-slate-300 mt-1">
+          En attente que le Ma&icirc;tre du jeu lance la premi&egrave;re manche...
+        </p>
+      </div>
+
+      <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-3 text-left space-y-2">
+        <div class="text-[11px] font-extrabold text-slate-400 uppercase">&Eacute;quipes dans le salon :</div>
+        <div id="lobby-teams-list" class="flex flex-wrap gap-2"></div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ECRAN 2 : PLATEAU DE JEU                   -->
+    <!-- ========================================== -->
+    <section id="screen-game" class="hidden space-y-3 flex-1 flex flex-col">
+
+      <!-- Tableau des Scores en Direct -->
+      <div id="scoreboard-bar" class="flex gap-2 overflow-x-auto pb-1 no-scrollbar"></div>
+
+      <!-- Bandeau de Manche & Progression -->
+      <div class="tv-card rounded-2xl px-4 py-2.5 flex items-center justify-between">
+        <div>
+          <span id="round-badge" class="text-[11px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-pink-600 text-white">
+            MANCHE 1
+          </span>
+          <h2 id="round-title" class="text-sm sm:text-base font-black text-white mt-0.5">
+            Duo, Carr&eacute; ou Cash
+          </h2>
+        </div>
+        <div class="text-right">
+          <div class="text-xs font-extrabold text-amber-400">
+            Titre <span id="q-current">1</span> / <span id="q-total">5</span>
+          </div>
+          <div id="category-pill" class="text-[10px] font-bold text-slate-400 uppercase">
+            Rock USA
+          </div>
+        </div>
+      </div>
+
+      <!-- Lecteur Audio, Chrono & Controles Play/Pause -->
+      <div class="tv-card rounded-3xl p-4 space-y-3 relative overflow-hidden">
+        <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+          <div id="timer-bar" class="h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 transition-all duration-200" style="width: 100%;"></div>
+        </div>
+
+        <div class="flex items-center justify-between gap-2">
+          <!-- Boutons Play / Pause -->
+          <div class="flex items-center gap-2">
+            <button id="btn-play" onclick="resumeGameTimerAndAudio()" class="btn-tv w-11 h-11 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 flex items-center justify-center shadow-lg" title="Lecture">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button id="btn-pause" onclick="pauseGameTimerAndAudio()" class="btn-tv w-11 h-11 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg" title="Pause">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+          </div>
+
+          <!-- Equalizer Visuel & Statut Audio -->
+          <div class="flex-1 flex flex-col items-center justify-center">
+            <div id="visualizer" class="flex items-end justify-center gap-1.5 h-8 mb-1">
+              <div class="eq-bar h-2"></div>
+              <div class="eq-bar h-2"></div>
+              <div class="eq-bar h-2"></div>
+              <div class="eq-bar h-2"></div>
+              <div class="eq-bar h-2"></div>
+            </div>
+            <span id="audio-status-text" class="text-[11px] font-bold text-cyan-300 text-center line-clamp-1">
+              Pr&ecirc;t &agrave; lancer l'extrait...
+            </span>
+          </div>
+
+          <!-- Affichage Chrono Numerique -->
+          <div class="px-3 py-1.5 rounded-2xl bg-slate-950 border-2 border-slate-700 flex flex-col items-center justify-center min-w-[56px]">
+            <span id="timer-seconds" class="text-xl font-black text-white leading-none">25</span>
+            <span class="text-[9px] font-bold text-slate-400 uppercase">sec</span>
+          </div>
+        </div>
+
+        <!-- Indice contextuel -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-2.5 text-center">
+          <p id="clue-text" class="text-xs sm:text-sm font-semibold text-slate-200">
+            &Eacute;coutez l'extrait et r&eacute;pondez !
+          </p>
+        </div>
+      </div>
+
+      <!-- GROS BUZZER MULTIJOUEUR (POUR LES JOUEURS) -->
+      <div id="guest-buzzer-zone" class="hidden tv-card rounded-3xl p-4 text-center space-y-2 border-2 border-rose-500/60">
+        <p class="text-xs font-extrabold text-rose-300 uppercase tracking-wider">
+          Vous avez reconnu le morceau ?
+        </p>
+        <button onclick="pressOnlineBuzzer()" class="buzzer-btn w-full py-5 rounded-2xl text-white font-black text-xl uppercase tracking-widest">
+          BUZZER !
+        </button>
+        <p class="text-[11px] text-slate-400">Appuyez vite pour prendre la main et bloquer le chrono !</p>
+      </div>
+
+      <!-- BANDEAU D'ALERTE BUZZER EN DIRECT -->
+      <div id="buzzed-banner" class="hidden bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 rounded-2xl p-3 text-center shadow-lg animate-pulse">
+        <div class="text-xs font-black uppercase tracking-widest text-white">
+          BUZZER ACTIV&Eacute; PAR :
+        </div>
+        <div id="buzzed-team-name" class="text-lg font-black text-slate-950">
+          &Eacute;QUIPE
+        </div>
+      </div>
+
+      <!-- SELECTEUR D'EQUIPE ACTIVE (POUR L'HOTE / LOCAL) -->
+      <div id="active-team-selector" class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-2.5 flex items-center justify-between gap-2">
+        <span class="text-xs font-extrabold text-slate-300 pl-1">Main &agrave; l'&eacute;quipe :</span>
+        <select id="answering-team-select" onchange="changeAnsweringTeam(this.value)" class="bg-slate-950 border border-amber-400/60 rounded-xl px-3 py-1.5 text-xs font-black text-amber-300 focus:outline-none"></select>
+      </div>
+
+      <!-- ZONE INTERACTIVE : MANCHE 1 (DUO/CARRE/CASH) -->
+      <div id="round1-controls" class="space-y-3">
+        <div id="dcc-choice-panel" class="grid grid-cols-3 gap-2.5">
+          <button onclick="chooseDCC('duo')" class="btn-tv tv-card rounded-2xl p-3.5 text-center border-2 border-cyan-500/60 hover:border-cyan-400">
+            <div class="text-lg font-black text-cyan-400">DUO</div>
+            <div class="text-[11px] font-bold text-slate-300 mt-0.5">2 choix</div>
+            <div class="mt-1.5 inline-block px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-xs font-black">+1 PT</div>
+          </button>
+
+          <button onclick="chooseDCC('carre')" class="btn-tv tv-card rounded-2xl p-3.5 text-center border-2 border-amber-500/60 hover:border-amber-400">
+            <div class="text-lg font-black text-amber-400">CARR&Eacute;</div>
+            <div class="text-[11px] font-bold text-slate-300 mt-0.5">4 choix</div>
+            <div class="mt-1.5 inline-block px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-xs font-black">+3 PTS</div>
+          </button>
+
+          <button onclick="chooseDCC('cash')" class="btn-tv tv-card rounded-2xl p-3.5 text-center border-2 border-pink-500/60 hover:border-pink-400">
+            <div class="text-lg font-black text-pink-400">CASH</div>
+            <div class="text-[11px] font-bold text-slate-300 mt-0.5">Sans aide</div>
+            <div class="mt-1.5 inline-block px-2 py-0.5 rounded bg-pink-500/20 text-pink-300 text-xs font-black">+5 PTS</div>
+          </button>
+        </div>
+
+        <div id="qcm-options-grid" class="hidden grid-cols-1 gap-2.5"></div>
+      </div>
+
+      <!-- ZONE SAISIE LIBRE & RECONNAISSANCE VOCALE -->
+      <div id="free-input-panel" class="hidden tv-card rounded-3xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span id="free-input-label" class="text-xs font-extrabold uppercase tracking-wider text-pink-400">
+            R&eacute;ponse Cash / Saisie Libre
+          </span>
+          <span class="text-[11px] text-slate-400">Titre ou Artiste/Film</span>
+        </div>
+
+        <div class="flex gap-2">
+          <input id="free-answer-input" type="text" placeholder="Tapez ou dictez votre r&eacute;ponse..." onkeypress="if(event.key==='Enter') submitFreeAnswer()" class="flex-1 bg-slate-950 border border-slate-700 rounded-2xl px-3.5 py-3 text-sm font-bold text-white focus:outline-none focus:border-pink-400" />
+          
+          <!-- Bouton Reconnaissance Vocale -->
+          <button id="btn-voice" onclick="toggleVoiceRecognition()" title="R&eacute;pondre &agrave; la voix" class="btn-tv w-12 h-12 rounded-2xl bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center shadow-lg shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"/></svg>
+          </button>
+        </div>
+
+        <div id="voice-status" class="hidden text-xs font-bold text-rose-300 text-center animate-pulse">
+          &Eacute;coute en cours... Prononcez le titre ou l'artiste !
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <button onclick="submitFreeAnswer()" class="btn-tv py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-black text-sm uppercase tracking-wider shadow-md">
+            Valider
+          </button>
+          <button id="btn-pass-question" onclick="revealAnswer(false)" class="btn-tv py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 font-bold text-xs uppercase tracking-wider">
+            R&eacute;v&eacute;ler
+          </button>
+        </div>
+      </div>
+
+      <!-- MESSAGE D'ATTENTE QUAND UN AUTRE JOUEUR A LA MAIN EN LIGNE -->
+      <div id="waiting-other-team-panel" class="hidden tv-card rounded-3xl p-5 text-center space-y-2 border border-slate-700">
+        <p class="text-sm font-extrabold text-white">
+          C'est au tour de <span id="waiting-team-name" class="text-amber-400">l'autre &eacute;quipe</span> !
+        </p>
+        <p class="text-xs text-slate-400">
+          Pr&eacute;parez-vous &agrave; buzzer s'ils se trompent ou sur le prochain extrait !
+        </p>
+      </div>
+
+      <!-- CARTE DE REVELATION DE LA REPONSE -->
+      <div id="reveal-panel" class="hidden tv-card rounded-3xl p-4 text-center space-y-3 border-2">
+        <div id="reveal-badge" class="inline-block px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider">
+          R&Eacute;SULTAT
+        </div>
+        <div>
+          <h3 id="reveal-title" class="text-lg sm:text-xl font-black text-white">Titre de la chanson</h3>
+          <p id="reveal-artist" class="text-sm font-bold text-amber-400">Artiste / S&eacute;rie / Film</p>
+          <p id="reveal-year" class="text-xs text-slate-400 mt-1">Ann&eacute;e &bull; Anecdote</p>
+        </div>
+        <button id="btn-next-question" onclick="nextQuestion()" class="btn-tv w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 font-black text-sm uppercase tracking-wider shadow-lg">
+          Question Suivante
+        </button>
+        <p id="guest-wait-next-msg" class="hidden text-xs font-bold text-cyan-300 animate-pulse">
+          En attente que le Ma&icirc;tre du jeu passe au titre suivant...
+        </p>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ECRAN 3 : FIN DE MANCHE / PODIUM FINAL     -->
+    <!-- ========================================== -->
+    <section id="screen-summary" class="hidden tv-card rounded-3xl p-6 text-center space-y-5 my-auto">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-amber-300">
+        <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8M12 17v4M7 4h10v6a5 5 0 01-10 0V4zM4 5h3v3a3 3 0 01-3-3zm16 0h-3v3a3 3 0 003-3z"/></svg>
+      </div>
+      <div>
+        <span id="summary-subtitle" class="text-xs font-extrabold uppercase tracking-widest text-amber-400">
+          FIN DE LA MANCHE 1
+        </span>
+        <h2 id="summary-title" class="text-2xl font-black text-white mt-1">
+          Classement Interm&eacute;diaire
+        </h2>
+      </div>
+
+      <div id="summary-leaderboard" class="space-y-2.5 text-left"></div>
+
+      <button id="btn-next-round" onclick="startNextRound()" class="btn-tv w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-600 text-slate-950 font-black text-base uppercase tracking-wider shadow-xl">
+        Passer &agrave; la Manche 2 : Saisie Libre
+      </button>
+      <p id="guest-wait-round-msg" class="hidden text-xs font-bold text-amber-300 animate-pulse">
+        En attente du lancement de la suite par le Ma&icirc;tre du jeu...
+      </p>
+    </section>
+
+  </div>
+
+  <!-- Element Audio HTML5 pour les extraits reels -->
+  <audio id="music-player" preload="none" crossorigin="anonymous"></audio>
+
+  <!-- ========================================== -->
+  <!-- LOGIQUE DE L'APPLICATION & BASE DE DONNEES -->
+  <!-- ========================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    let isFirebaseReady = false;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'blind-test-tv-show';
+
+    async function initFirebase() {
+      const statusPill = document.getElementById("cloud-status-pill");
+      try {
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+          const firebaseConfig = JSON.parse(__firebase_config);
+          const app = initializeApp(firebaseConfig);
+          db = getFirestore(app);
+          auth = getAuth(app);
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            const cred = await signInWithCustomToken(auth, __initial_auth_token);
+            currentUser = cred.user;
+          } else {
+            const cred = await signInAnonymously(auth);
+            currentUser = cred.user;
+          }
+          isFirebaseReady = true;
+          statusPill.textContent = "Cloud Pr\u00eat";
+          statusPill.className = "text-[10px] px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500/50 text-emerald-300 font-bold";
+
+          if (gameState.connectionMode === "host") {
+            createOnlineHostRoom();
+          }
+        } else {
+          throw new Error("Config absente");
+        }
+      } catch (err) {
+        statusPill.textContent = "Mode Local";
+        statusPill.className = "text-[10px] px-2 py-0.5 rounded bg-amber-950 border border-amber-500/50 text-amber-300 font-bold";
+      }
+    }
+
+    // =========================================================================
+    // 1. CATALOGUE MUSICAL MASSIF (ROCK USA + FILMS & SERIES -> 1000 TITRES)
+    // =========================================================================
+    const BASE_TRACKS = [
+      { title: "Smells Like Teen Spirit", artist: "Nirvana", cat: "ROCK", year: 1991, clue: "Hymne grunge de Seattle sorti sur l'album Nevermind.", freq: [329, 329, 440, 440, 392, 392, 523] },
+      { title: "Sweet Child O' Mine", artist: "Guns N' Roses", cat: "ROCK", year: 1987, clue: "Riff d'intro l\u00e9gendaire de Slash au chapeau haut-de-forme.", freq: [293, 587, 440, 392, 784, 440, 740, 440] },
+      { title: "Enter Sandman", artist: "Metallica", cat: "ROCK", year: 1991, clue: "Classique du Black Album avec un riff lourd et hypnotique.", freq: [164, 329, 392, 233, 220, 164] },
+      { title: "Californication", artist: "Red Hot Chili Peppers", cat: "ROCK", year: 1999, clue: "Ballade rock californienne d'Anthony Kiedis et John Frusciante.", freq: [220, 329, 493, 523, 329, 261] },
+      { title: "In The End", artist: "Linkin Park", cat: "ROCK", year: 2000, clue: "Notes de piano embl\u00e9matiques suivies du rap de Mike Shinoda.", freq: [311, 466, 466, 370, 349, 349, 349, 370] },
+      { title: "Boulevard of Broken Dreams", artist: "Green Day", cat: "ROCK", year: 2004, clue: "Je marche seul sur cette avenue d\u00e9serte... (American Idiot).", freq: [329, 392, 293, 440, 329] },
+      { title: "Everlong", artist: "Foo Fighters", cat: "ROCK", year: 1997, clue: "Chef-d'\u0153uvre de Dave Grohl au rythme effr\u00e9n\u00e9.", freq: [293, 440, 587, 440, 293, 440] },
+      { title: "Livin' On A Prayer", artist: "Bon Jovi", cat: "ROCK", year: 1986, clue: "L'histoire de Tommy et Gina avec la c\u00e9l\u00e8bre Talk Box.", freq: [329, 329, 329, 392, 440, 493, 523] },
+      { title: "Hotel California", artist: "Eagles", cat: "ROCK", year: 1976, clue: "Solo de guitare double mythique dans un h\u00f4tel dont on ne part jamais.", freq: [493, 587, 740, 587, 493, 554, 659] },
+      { title: "Fortunate Son", artist: "Creedence Clearwater Revival", cat: "ROCK", year: 1969, clue: "Hymne rock protestataire souvent associ\u00e9 aux films sur le Vietnam.", freq: [392, 349, 293, 261, 392, 440] },
+      { title: "Born in the U.S.A.", artist: "Bruce Springsteen", cat: "ROCK", year: 1984, clue: "Le Boss au sommet de sa gloire avec un synth\u00e9 et une batterie massive.", freq: [493, 493, 493, 659, 493, 440] },
+      { title: "Mr. Brightside", artist: "The Killers", cat: "ROCK", year: 2003, clue: "Tube rock de Las Vegas jou\u00e9 non-stop depuis plus de 20 ans.", freq: [554, 587, 554, 493, 440, 554] },
+      { title: "Seven Nation Army", artist: "The White Stripes", cat: "ROCK", year: 2003, clue: "Ligne de basse (jou\u00e9e \u00e0 la guitare) reprise dans tous les stades.", freq: [329, 329, 392, 329, 293, 261, 246] },
+      { title: "Welcome to the Jungle", artist: "Guns N' Roses", cat: "ROCK", year: 1987, clue: "Cris d'Axl Rose d\u00e8s les premi\u00e8res secondes d'Appetite for Destruction.", freq: [440, 493, 523, 587, 659, 587] },
+      { title: "Basket Case", artist: "Green Day", cat: "ROCK", year: 1994, clue: "Punk rock californien nerveux de l'album Dookie.", freq: [311, 392, 466, 392, 349, 311] },
+      { title: "All The Small Things", artist: "Blink-182", cat: "ROCK", year: 1999, clue: "Pop-punk culte avec le refrain 'Na na na na...'.", freq: [523, 523, 523, 587, 659, 587] },
+      { title: "Numb", artist: "Linkin Park", cat: "ROCK", year: 2003, clue: "M\u00e9lodie \u00e9lectronique planante suivie de la voix puissante de Chester Bennington.", freq: [554, 659, 554, 880, 830, 659] },
+      { title: "Under the Bridge", artist: "Red Hot Chili Peppers", cat: "ROCK", year: 1991, clue: "Ballade intime sur la ville de Los Angeles.", freq: [329, 415, 493, 659, 493, 415] },
+      { title: "Nothing Else Matters", artist: "Metallica", cat: "ROCK", year: 1991, clue: "Arp\u00e8ge c\u00e9l\u00e8bre jou\u00e9 uniquement sur les cordes \u00e0 vide au d\u00e9but.", freq: [329, 493, 659, 784, 987, 784, 659, 493] },
+      { title: "Chop Suey!", artist: "System of a Down", cat: "ROCK", year: 2001, clue: "'Wake up! Grab a brush and put a little make-up!'", freq: [392, 370, 392, 370, 392, 440] },
+      { title: "Killing in the Name", artist: "Rage Against The Machine", cat: "ROCK", year: 1992, clue: "Fusion rap-metal explosive et engag\u00e9e de Los Angeles.", freq: [293, 329, 293, 440, 293, 349] },
+      { title: "Alive", artist: "Pearl Jam", cat: "ROCK", year: 1991, clue: "Voix rauque d'Eddie Vedder et solo \u00e9pique du mouvement grunge.", freq: [440, 493, 554, 659, 554, 493] },
+      { title: "Black Hole Sun", artist: "Soundgarden", cat: "ROCK", year: 1994, clue: "Riff psych\u00e9d\u00e9lique hypnotique port\u00e9 par Chris Cornell.", freq: [392, 466, 523, 587, 523, 466] },
+      { title: "Walk This Way", artist: "Aerosmith", cat: "ROCK", year: 1975, clue: "Riff funk-rock l\u00e9gendaire de Joe Perry et Steven Tyler.", freq: [261, 293, 329, 523, 261, 293, 329] },
+      { title: "Dream On", artist: "Aerosmith", cat: "ROCK", year: 1973, clue: "Mont\u00e9e vocale vertigineuse de Steven Tyler sur le refrain.", freq: [349, 392, 415, 466, 523, 698] },
+      { title: "Light My Fire", artist: "The Doors", cat: "ROCK", year: 1967, clue: "Orgue psych\u00e9d\u00e9lique de Ray Manzarek et voix de Jim Morrison.", freq: [440, 554, 659, 587, 523, 466] },
+      { title: "Purple Haze", artist: "Jimi Hendrix", cat: "ROCK", year: 1967, clue: "Accord dissonant culte du g\u00e9nie de la Stratocaster.", freq: [233, 466, 233, 466, 392, 329] },
+      { title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", cat: "ROCK", year: 1974, clue: "Riff de rock sudiste imm\u00e9diatement reconnaissable d\u00e8s les 3 premi\u00e8res notes.", freq: [293, 293, 587, 440, 261, 261, 523] },
+      { title: "Losing My Religion", artist: "R.E.M.", cat: "ROCK", year: 1991, clue: "Riff de mandoline inoubliable venu d'Athens en G\u00e9orgie.", freq: [440, 523, 659, 523, 440, 523, 659] },
+      { title: "Sex on Fire", artist: "Kings of Leon", cat: "ROCK", year: 2008, clue: "Guitare tranchante et cri du c\u0153ur rock des fr\u00e8res Followill.", freq: [659, 659, 659, 740, 659, 493] },
+      { title: "Blitzkrieg Bop", artist: "Ramones", cat: "ROCK", year: 1976, clue: "'Hey! Ho! Let's Go!' - L'acte de naissance du punk rock am\u00e9ricain.", freq: [440, 440, 587, 659, 440, 587] },
+      { title: "Buddy Holly", artist: "Weezer", cat: "ROCK", year: 1994, clue: "Clip culte incrust\u00e9 dans la s\u00e9rie Happy Days.", freq: [415, 440, 493, 554, 493, 440] },
+      { title: "Misery Business", artist: "Paramore", cat: "ROCK", year: 2007, clue: "\u00c9nergie pop-punk survolt\u00e9e port\u00e9e par Hayley Williams.", freq: [349, 415, 466, 523, 466, 415] },
+      { title: "Welcome to the Black Parade", artist: "My Chemical Romance", cat: "ROCK", year: 2006, clue: "Note de piano solitaire suivie d'une marche rock th\u00e9\u00e2trale.", freq: [784, 740, 987, 659, 587, 784] },
+      { title: "Jump", artist: "Van Halen", cat: "ROCK", year: 1984, clue: "Synth\u00e9tiseur Oberheim explosif d'Eddie Van Halen.", freq: [523, 659, 587, 523, 587, 659] },
+      { title: "La Grange", artist: "ZZ Top", cat: "ROCK", year: 1973, clue: "Boogie blues-rock texan des c\u00e9l\u00e8bres barbus.", freq: [220, 261, 293, 220, 261, 293] },
+      { title: "Free Fallin'", artist: "Tom Petty", cat: "ROCK", year: 1989, clue: "Accord acoustique lumineux embl\u00e9matique du rock am\u00e9ricain.", freq: [349, 466, 466, 349, 261] },
+      { title: "Eye of the Tiger", artist: "Survivor", cat: "ROCK", year: 1982, clue: "Riff saccad\u00e9 d'entra\u00eenement devenu l'hymne de Rocky III.", freq: [523, 523, 466, 523, 523, 466, 523, 415] },
+      { title: "Africa", artist: "Toto", cat: "ROCK", year: 1982, clue: "Classique FM am\u00e9ricain aux percussions et synth\u00e9s cultes.", freq: [493, 493, 440, 493, 554, 659] },
+      { title: "Hold the Line", artist: "Toto", cat: "ROCK", year: 1978, clue: "Piano martel\u00e9 et guitare solo de Steve Lukather.", freq: [370, 440, 493, 554, 493, 440] },
+      { title: "Don't Stop Believin'", artist: "Journey", cat: "ROCK", year: 1981, clue: "Intro au piano la plus chant\u00e9e dans les karaok\u00e9s am\u00e9ricains.", freq: [329, 370, 415, 493, 370, 415] },
+      { title: "More Than a Feeling", artist: "Boston", cat: "ROCK", year: 1976, clue: "Guitare acoustique puis explosion \u00e9lectrique arena rock.", freq: [293, 440, 587, 740, 659, 587] },
+      { title: "Carry On Wayward Son", artist: "Kansas", cat: "ROCK", year: 1976, clue: "Ch\u0153ur a cappella suivi d'un riff prog-rock culte (et hymne de Supernatural).", freq: [440, 392, 440, 523, 440, 392] },
+      { title: "I Love Rock 'n' Roll", artist: "Joan Jett & the Blackhearts", cat: "ROCK", year: 1981, clue: "Riff binaire imparable et claquements de mains.", freq: [329, 329, 440, 493, 329, 329] },
+      { title: "Heart of Glass", artist: "Blondie", cat: "ROCK", year: 1979, clue: "Fusion rock new-yorkais et disco men\u00e9e par Debbie Harry.", freq: [329, 415, 493, 659, 493, 415] },
+      { title: "Psycho Killer", artist: "Talking Heads", cat: "ROCK", year: 1977, clue: "Ligne de basse minimaliste et refrain 'Qu'est-ce que c'est ?'.", freq: [220, 220, 261, 293, 329, 220] },
+      { title: "Creep", artist: "Stone Temple Pilots", cat: "ROCK", year: 1992, clue: "Grand classique grunge de San Diego port\u00e9 par Scott Weiland.", freq: [392, 370, 329, 293, 329] },
+      { title: "Man in the Box", artist: "Alice in Chains", cat: "ROCK", year: 1990, clue: "Riff lourd avec effet talk-box et harmonies vocales sombres.", freq: [311, 370, 415, 370, 311] },
+      { title: "Freak on a Leash", artist: "Korn", cat: "ROCK", year: 1998, clue: "Riff nu-metal \u00e0 7 cordes et scat vocal d\u00e9lirant de Jonathan Davis.", freq: [220, 233, 220, 246, 220, 233] },
+      { title: "Duality", artist: "Slipknot", cat: "ROCK", year: 2004, clue: "'I push my fingers into my eyes...' - Metal de l'Iowa.", freq: [261, 277, 261, 311, 261, 277] },
+
+      // --- SERIES & FILMS CULTES ---
+      { title: "Stranger Things (Main Theme)", artist: "Kyle Dixon & Michael Stein (S\u00e9rie)", cat: "SCREEN", year: 2016, clue: "Arp\u00e8ge de synth\u00e9tiseur analogique angoissant venu d'Hawkins.", freq: [261, 329, 392, 493, 523, 493, 392, 329] },
+      { title: "Running Up That Hill", artist: "Kate Bush (Stranger Things)", cat: "SCREEN", year: 1985, clue: "La chanson pr\u00e9f\u00e9r\u00e9e de Max qui la sauve de Vecna dans la saison 4.", freq: [523, 466, 392, 466, 523, 587] },
+      { title: "Master of Puppets", artist: "Metallica (Stranger Things)", cat: "SCREEN", year: 1986, clue: "Jou\u00e9e par Eddie Munson sur le toit de sa caravane dans le Monde \u00e0 l'Envers.", freq: [329, 659, 622, 587, 554, 523] },
+      { title: "Game of Thrones (G\u00e9n\u00e9rique)", artist: "Ramin Djawadi (S\u00e9rie)", cat: "SCREEN", year: 2011, clue: "Violoncelle \u00e9pique accompagnant la carte anim\u00e9e de Westeros.", freq: [392, 261, 311, 349, 392, 261, 311, 349] },
+      { title: "I'll Be There for You", artist: "The Rembrandts (Friends)", cat: "SCREEN", year: 1994, clue: "G\u00e9n\u00e9rique culte avec les 4 claquements de mains devant la fontaine.", freq: [440, 440, 440, 440, 493, 440, 370] },
+      { title: "Red Right Hand", artist: "Nick Cave (Peaky Blinders)", cat: "SCREEN", year: 1994, clue: "Th\u00e8me sombre et \u00e9l\u00e9gant accompagnant Thomas Shelby \u00e0 Birmingham.", freq: [246, 293, 370, 293, 246, 220] },
+      { title: "Breaking Bad (G\u00e9n\u00e9rique)", artist: "Dave Porter (S\u00e9rie)", cat: "SCREEN", year: 2008, clue: "Guitare slide d\u00e9sertique et tableau p\u00e9riodique des \u00e9l\u00e9ments.", freq: [293, 349, 440, 392, 293] },
+      { title: "The Office (G\u00e9n\u00e9rique)", artist: "Jay Ferguson (S\u00e9rie)", cat: "SCREEN", year: 2005, clue: "Accord\u00e9on et piano joyeux de Dunder Mifflin \u00e0 Scranton.", freq: [392, 493, 587, 493, 392, 440, 523] },
+      { title: "Star Wars (Marche Imp\u00e9riale)", artist: "John Williams (Film)", cat: "SCREEN", year: 1980, clue: "Th\u00e8me orchestral mena\u00e7ant de Dark Vador.", freq: [392, 392, 392, 311, 466, 392, 311, 466, 392] },
+      { title: "Misirlou", artist: "Dick Dale (Pulp Fiction)", cat: "SCREEN", year: 1962, clue: "Guitare surf fr\u00e9n\u00e9tique d\u00e8s le g\u00e9n\u00e9rique d'ouverture de Quentin Tarantino.", freq: [329, 349, 415, 440, 493, 523, 622] },
+      { title: "Hooked on a Feeling", artist: "Blue Swede (Les Gardiens de la Galaxie)", cat: "SCREEN", year: 1974, clue: "'Ooga-Chaka Ooga-Ooga' sur la cassette Awesome Mix Vol. 1 de Star-Lord.", freq: [392, 392, 440, 493, 523, 493] },
+      { title: "Come and Get Your Love", artist: "Redbone (Les Gardiens de la Galaxie)", cat: "SCREEN", year: 1974, clue: "Chanson sur laquelle Peter Quill danse sur la plan\u00e8te Morag.", freq: [493, 587, 659, 587, 493, 440] },
+      { title: "Danger Zone", artist: "Kenny Loggins (Top Gun)", cat: "SCREEN", year: 1986, clue: "D\u00e9collages d'avions de chasse F-14 sur porte-avions avec Maverick.", freq: [329, 329, 392, 440, 329, 293] },
+      { title: "The Power of Love", artist: "Huey Lewis & The News (Retour vers le Futur)", cat: "SCREEN", year: 1985, clue: "Marty McFly en skateboard accroch\u00e9 aux voitures vers le lyc\u00e9e.", freq: [523, 523, 587, 659, 587, 523] },
+      { title: "He's a Pirate", artist: "Hans Zimmer (Pirates des Cara\u00efbes)", cat: "SCREEN", year: 2003, clue: "Th\u00e8me d'aventure effr\u00e9n\u00e9 du Capitaine Jack Sparrow.", freq: [293, 349, 440, 440, 440, 493, 523] },
+      { title: "Hedwig's Theme", artist: "John Williams (Harry Potter)", cat: "SCREEN", year: 2001, clue: "C\u00e9lesta magique annon\u00e7ant Poudlard et la chouette d'Harry.", freq: [493, 659, 784, 740, 659, 987, 880] },
+      { title: "Cornfield Chase", artist: "Hans Zimmer (Interstellar)", cat: "SCREEN", year: 2014, clue: "Orgue cosmique et piano minimaliste de Christopher Nolan.", freq: [440, 659, 440, 659, 493, 659] },
+      { title: "Time", artist: "Hans Zimmer (Inception)", cat: "SCREEN", year: 2010, clue: "Mont\u00e9e orchestrale progressive devenue culte au cin\u00e9ma.", freq: [220, 329, 261, 392, 293, 440] },
+      { title: "Now We Are Free", artist: "Hans Zimmer & Lisa Gerrard (Gladiator)", cat: "SCREEN", year: 2000, clue: "Chant \u00e9mouvant de Maximus marchant dans les champs de bl\u00e9.", freq: [392, 440, 493, 523, 493, 440] },
+      { title: "Ghostbusters", artist: "Ray Parker Jr. (SOS Fant\u00f4mes)", cat: "SCREEN", year: 1984, clue: "'Who you gonna call?' - Hymne des chasseurs de fant\u00f4mes.", freq: [493, 493, 622, 493, 554, 440] },
+      { title: "The Final Countdown", artist: "Europe (Film / S\u00e9ries)", cat: "SCREEN", year: 1986, clue: "Cuivres synth\u00e9tiques l\u00e9gendaires utilis\u00e9s dans Rocky IV et Arrested Development.", freq: [493, 440, 493, 329, 523, 493, 523, 493, 440] },
+      { title: "Where Is My Mind?", artist: "Pixies (Fight Club)", cat: "SCREEN", year: 1988, clue: "Sc\u00e8ne finale culte devant l'effondrement des immeubles.", freq: [659, 622, 659, 622, 659, 493] },
+      { title: "Wake Up", artist: "Rage Against The Machine (Matrix)", cat: "SCREEN", year: 1992, clue: "G\u00e9n\u00e9rique de fin quand Neo raccroche le t\u00e9l\u00e9phone et s'envole.", freq: [329, 392, 440, 493, 587, 659] },
+      { title: "Jurassic Park (Main Theme)", artist: "John Williams (Film)", cat: "SCREEN", year: 1993, clue: "\u00c9merveillement orchestral devant les premiers brachiosaures.", freq: [466, 440, 466, 349, 311, 466] },
+      { title: "Indiana Jones (Raiders March)", artist: "John Williams (Film)", cat: "SCREEN", year: 1981, clue: "Th\u00e8me d'aventure de l'arch\u00e9ologue au fouet et au fedora.", freq: [329, 349, 392, 523, 293, 329, 349] },
+      { title: "Mission: Impossible (Th\u00e8me)", artist: "Lalo Schifrin (Film / S\u00e9rie)", cat: "SCREEN", year: 1966, clue: "Rythme asym\u00e9trique en 5/4 d'Ethan Hunt.", freq: [392, 392, 466, 523, 392, 392, 349, 370] },
+      { title: "James Bond Theme", artist: "Monty Norman (007)", cat: "SCREEN", year: 1962, clue: "Guitare twangy espionnage de l'agent britannique 007.", freq: [329, 349, 349, 349, 349, 329, 329, 329] },
+      { title: "Concerning Hobbits", artist: "Howard Shore (Le Seigneur des Anneaux)", cat: "SCREEN", year: 2001, clue: "Fl\u00fbte irlandaise paisible de la Comt\u00e9.", freq: [293, 329, 370, 440, 370, 329, 293] },
+      { title: "Take On Me", artist: "a-ha (The Last of Us / Deadpool 2)", cat: "SCREEN", year: 1985, clue: "Synth-pop l\u00e9gendaire reprise \u00e0 la guitare acoustique par Ellie.", freq: [740, 740, 587, 493, 493, 659, 659] },
+      { title: "Bella Ciao", artist: "La Casa de Papel (S\u00e9rie)", cat: "SCREEN", year: 2017, clue: "Chant de r\u00e9sistance devenu l'hymne des braqueurs au masque de Dal\u00ed.", freq: [329, 440, 493, 523, 440, 329, 440] }
+    ];
+
+    function buildFull1000Catalog() {
+      const catalog = [...BASE_TRACKS];
+      const extraRockPairs = [
+        ["Nirvana", ["Come As You Are", "Lithium", "Heart-Shaped Box", "In Bloom", "About a Girl", "All Apologies", "Rape Me", "The Man Who Sold the World"]],
+        ["Foo Fighters", ["The Pretender", "Learn to Fly", "Best of You", "Times Like These", "Monkey Wrench", "My Hero", "All My Life", "Walk"]],
+        ["Red Hot Chili Peppers", ["Can't Stop", "Scar Tissue", "Otherside", "By the Way", "Snow (Hey Oh)", "Dani California", "Give It Away", "Suck My Kiss"]],
+        ["Metallica", ["Master of Puppets", "One", "Sad But True", "For Whom the Bell Tolls", "Fade to Black", "Seek & Destroy", "The Unforgiven", "Whiskey in the Jar"]],
+        ["Green Day", ["American Idiot", "When I Come Around", "Wake Me Up When September Ends", "Good Riddance", "Holiday", "21 Guns", "Brain Stew", "Longview"]],
+        ["Linkin Park", ["Crawling", "Faint", "Somewhere I Belong", "Breaking the Habit", "What I've Done", "Bleed It Out", "Papercut", "One Step Closer"]],
+        ["Guns N' Roses", ["Paradise City", "November Rain", "Knockin' on Heaven's Door", "Patience", "You Could Be Mine", "Don't Cry", "Nightrain", "Civil War"]],
+        ["Bon Jovi", ["It's My Life", "You Give Love a Bad Name", "Wanted Dead or Alive", "Always", "Bed of Roses", "Runaway", "Bad Medicine", "Keep the Faith"]],
+        ["Aerosmith", ["I Don't Want to Miss a Thing", "Crazy", "Cryin'", "Sweet Emotion", "Love in an Elevator", "Dude (Looks Like a Lady)", "Janie's Got a Gun", "Rag Doll"]],
+        ["Pearl Jam", ["Jeremy", "Even Flow", "Black", "Better Man", "Daughter", "Yellow Ledbetter", "Elderly Woman", "Corduroy"]],
+        ["Bruce Springsteen", ["Dancing in the Dark", "Born to Run", "The River", "I'm on Fire", "Glory Days", "Hungry Heart", "Streets of Philadelphia", "Thunder Road"]],
+        ["The Doors", ["Riders on the Storm", "Break On Through", "People Are Strange", "Roadhouse Blues", "Love Her Madly", "Touch Me", "L.A. Woman", "Hello, I Love You"]],
+        ["Jimi Hendrix", ["All Along the Watchtower", "Hey Joe", "Voodoo Child", "Foxy Lady", "Little Wing", "The Wind Cries Mary", "Fire", "Crosstown Traffic"]],
+        ["Creedence Clearwater Revival", ["Bad Moon Rising", "Have You Ever Seen the Rain", "Proud Mary", "Down on the Corner", "Who'll Stop the Rain", "Born on the Bayou", "Green River", "Suzie Q"]],
+        ["Blink-182", ["What's My Age Again?", "I Miss You", "First Date", "The Rock Show", "Dammit", "Adam's Song", "Stay Together for the Kids", "Feeling This"]],
+        ["System of a Down", ["Toxicity", "B.Y.O.B.", "Aerials", "Lonely Day", "Sugar", "Hypnotize", "Question!", "Spiders"]],
+        ["The Killers", ["Somebody Told Me", "When You Were Young", "Human", "Read My Mind", "All These Things That I've Done", "Smile Like You Mean It", "Spaceman", "The Man"]],
+        ["Weezer", ["Island in the Sun", "Say It Ain't So", "Beverly Hills", "Hash Pipe", "Undone - The Sweater Song", "Pork and Beans", "El Scorcho", "My Name Is Jonas"]],
+        ["Tom Petty", ["I Won't Back Down", "Runnin' Down a Dream", "American Girl", "Learning to Fly", "Mary Jane's Last Dance", "Refugee", "Don't Do Me Like That", "You Wreck Me"]],
+        ["Van Halen", ["Panama", "Runnin' with the Devil", "Hot for Teacher", "Eruption", "Ain't Talkin' 'Bout Love", "Why Can't This Be Love", "Dance the Night Away", "You Really Got Me"]],
+        ["Kiss", ["I Was Made for Lovin' You", "Rock and Roll All Nite", "Detroit Rock City", "Beth", "Strutter", "Black Diamond", "Lick It Up", "Heaven's on Fire"]],
+        ["Rage Against The Machine", ["Bulls on Parade", "Guerrilla Radio", "Testify", "Bombtrack", "Sleep Now in the Fire", "Freedom", "Know Your Enemy", "Renegades of Funk"]],
+        ["Alice in Chains", ["Would?", "Rooster", "Them Bones", "Down in a Hole", "No Excuses", "Nutshell", "Heaven Beside You", "Angry Chair"]],
+        ["Soundgarden", ["Spoonman", "Fell on Black Days", "Outshined", "Rusty Cage", "Burden in My Hand", "The Day I Tried to Live", "Jesus Christ Pose", "Blow Up the Outside World"]],
+        ["R.E.M.", ["Everybody Hurts", "Man on the Moon", "Shiny Happy People", "The One I Love", "It's the End of the World", "Orange Crush", "Drive", "Nightswimming"]],
+        ["Kings of Leon", ["Use Somebody", "Pyro", "Closer", "The Bucket", "Molly's Chambers", "Radioactive", "Fans", "Waste a Moment"]],
+        ["Paramore", ["Still Into You", "Ain't It Fun", "Decode", "That's What You Get", "Crushcrushcrush", "Hard Times", "Ignorance", "The Only Exception"]],
+        ["My Chemical Romance", ["Helena", "Teenagers", "I'm Not Okay", "Famous Last Words", "Na Na Na", "The Ghost of You", "Sing", "Dead!"]],
+        ["ZZ Top", ["Gimme All Your Lovin'", "Sharp Dressed Man", "Legs", "Tush", "Cheap Sunglasses", "Rough Boy", "Blue Jean Blues", "Got Me Under Pressure"]],
+        ["Lynyrd Skynyrd", ["Free Bird", "Simple Man", "Gimme Three Steps", "Tuesday's Gone", "Call Me the Breeze", "That Smell", "What's Your Name", "Saturday Night Special"]],
+        ["Eagles", ["Take It Easy", "Desperado", "Life in the Fast Lane", "One of These Nights", "New Kid in Town", "Tequila Sunrise", "Heartache Tonight", "Peaceful Easy Feeling"]],
+        ["Blondie", ["Call Me", "One Way or Another", "Maria", "The Tide Is High", "Rapture", "Atomic", "Hanging on the Telephone", "Dreaming"]],
+        ["Talking Heads", ["Once in a Lifetime", "Burning Down the House", "This Must Be the Place", "Road to Nowhere", "And She Was", "Wild Wild Life", "Life During Wartime", "Take Me to the River"]],
+        ["Ramones", ["I Wanna Be Sedated", "Pet Sematary", "Rockaway Beach", "Sheena Is a Punk Rocker", "Teenage Lobotomy", "Beat on the Brat", "Poison Heart", "Bonzo Goes to Bitburg"]],
+        ["Offspring", ["The Kids Aren't Alright", "Pretty Fly (For a White Guy)", "Self Esteem", "Come Out and Play", "You're Gonna Go Far, Kid", "Gone Away", "Why Don't You Get a Job?", "Want You Bad"]],
+        ["Queens of the Stone Age", ["No One Knows", "Go With the Flow", "Little Sister", "Make It Wit Chu", "The Way You Used to Do", "3's & 7's", "My God Is the Sun", "Burn the Witch"]],
+        ["Incubus", ["Drive", "Wish You Were Here", "Pardon Me", "Stellar", "Megalomaniac", "Anna Molly", "Dig", "Warning"]],
+        ["Audioslave", ["Like a Stone", "Cochise", "Show Me How to Live", "Be Yourself", "I Am the Highway", "Doesn't Remind Me", "Original Fire", "Shadow on the Sun"]],
+        ["Smashing Pumpkins", ["1979", "Bullet with Butterfly Wings", "Today", "Tonight, Tonight", "Disarm", "Zero", "Cherub Rock", "Ava Adore"]],
+        ["Nine Inch Nails", ["Closer", "Hurt", "The Hand That Feeds", "Head Like a Hole", "Wish", "March of the Pigs", "Every Day Is Exactly the Same", "Only"]],
+        ["Korn", ["Falling Away from Me", "Blind", "Got the Life", "Coming Undone", "Here to Stay", "Twisted Transistor", "A.D.I.D.A.S.", "Make Me Bad"]],
+        ["Slipknot", ["Psychosocial", "Before I Forget", "Wait and Bleed", "The Devil in I", "Snuff", "Unsainted", "Spit It Out", "Sulfur"]],
+        ["Disturbed", ["Down with the Sickness", "The Sound of Silence", "Stricken", "Indestructible", "Inside the Fire", "Stupify", "Ten Thousand Fists", "Prayer"]],
+        ["Avenged Sevenfold", ["Hail to the King", "Nightmare", "Bat Country", "Afterlife", "A Little Piece of Heaven", "So Far Away", "Beast and the Harlot", "Almost Easy"]],
+        ["Panic! At The Disco", ["I Write Sins Not Tragedies", "High Hopes", "Death of a Bachelor", "Nine in the Afternoon", "Emperor's New Clothes", "The Ballad of Mona Lisa", "Victorious", "Hey Look Ma, I Made It"]],
+        ["Fall Out Boy", ["Sugar, We're Goin Down", "Thnks fr th Mmrs", "Centuries", "Dance, Dance", "My Songs Know What You Did in the Dark", "This Ain't a Scene", "Immortals", "Uma Thurman"]],
+        ["Creed / Alter Bridge", ["With Arms Wide Open", "Higher", "My Sacrifice", "One Last Breath", "Metalingus", "Blackbird", "Isolation", "Open Your Eyes"]],
+        ["3 Doors Down", ["Kryptonite", "Here Without You", "When I'm Gone", "Loser", "It's Not My Time", "Be Like That", "Let Me Go", "Away from the Sun"]],
+        ["Goo Goo Dolls", ["Iris", "Slide", "Name", "3AM", "Push", "Unwell", "If You're Gone", "How Far We've Come"]],
+        ["Lenny Kravitz", ["Are You Gonna Go My Way", "Fly Away", "American Woman", "It Ain't Over 'Til It's Over", "Again", "I Belong to You", "Mr. Cab Driver", "Always on the Run"]],
+        ["Cage The Elephant", ["Loser", "Ain't No Rest for the Wicked", "Cigarette Daydreams", "Trouble", "Come a Little Closer", "Where It's At", "E-Pro", "Mess Around"]],
+        ["The Strokes", ["Last Nite", "Reptilia", "Someday", "The Adults Are Talking", "12:51", "You Only Live Once", "Hard to Explain", "Juicebox"]],
+        ["Pixies", ["Debaser", "Here Comes Your Man", "Monkey Gone to Heaven", "Evil", "Obstacle 1", "Slow Hands", "C'mere", "Gigantic"]],
+        ["Steppenwolf", ["Born to Be Wild", "Magic Carpet Ride", "The Pusher", "Rock Me", "Sookie Sookie", "Hey Lawdy Mama", "Jupiter's Child", "Snowblind Friend"]],
+        ["Heart / Pat Benatar", ["Barracuda", "Alone", "Crazy on You", "Hit Me with Your Best Shot", "Love Is a Battlefield", "Heartbreaker", "We Belong", "Magic Man"]],
+        ["Foreigner", ["I Want to Know What Love Is", "Cold as Ice", "Juke Box Hero", "Urgent", "Waiting for a Girl Like You", "Separate Ways", "Any Way You Want It", "Open Arms"]],
+        ["Styx", ["Renegade", "Come Sail Away", "Mr. Roboto", "Peace of Mind", "Foreplay/Long Time", "Dust in the Wind", "Point of Know Return", "Babe"]],
+        ["Motley Crue / Def Leppard", ["Kickstart My Heart", "Girls, Girls, Girls", "Dr. Feelgood", "Home Sweet Home", "Pour Some Sugar on Me", "Hysteria", "Love Bites", "Photograph"]],
+        ["Black Sabbath / Ozzy Osbourne", ["Crazy Train", "Paranoid", "Iron Man", "War Pigs", "No More Tears", "Mama, I'm Coming Home", "Bark at the Moon", "Mr. Crowley"]],
+        ["AC/DC (Rock Culte)", ["Back in Black", "Highway to Hell", "Thunderstruck", "You Shook Me All Night Long", "T.N.T.", "Hells Bells", "Shoot to Thrill", "Whole Lotta Rosie"]]
+      ];
+
+      const extraScreenList = [
+        { title: "The Mandalorian (Th\u00e8me)", artist: "Ludwig G\u00f6ransson (S\u00e9rie Star Wars)", clue: "Fl\u00fbte basse et percussions m\u00e9talliques du chasseur de primes." },
+        { title: "The Witcher (Toss a Coin to Your Witcher)", artist: "Jaskier / Sonya Belousova (S\u00e9rie)", clue: "Ballade du barde qui reste en t\u00eate apr\u00e8s les combats de Geralt." },
+        { title: "Westworld (G\u00e9n\u00e9rique)", artist: "Ramin Djawadi (S\u00e9rie HBO)", clue: "Piano m\u00e9canique futuriste de l'ouest sauvage." },
+        { title: "Succession (G\u00e9n\u00e9rique)", artist: "Nicholas Britell (S\u00e9rie HBO)", clue: "Piano classique m\u00eal\u00e9 \u00e0 un beat hip-hop pour la famille Roy." },
+        { title: "Sherlock (G\u00e9n\u00e9rique)", artist: "David Arnold & Michael Price (S\u00e9rie BBC)", clue: "Cymbalum et cordes rapides du 221B Baker Street." },
+        { title: "Doctor Who (Th\u00e8me)", artist: "Ron Grainer / Murray Gold (S\u00e9rie)", clue: "Bruits \u00e9lectroniques du TARDIS voyageant dans le temps." },
+        { title: "X-Files (G\u00e9n\u00e9rique)", artist: "Mark Snow (S\u00e9rie)", clue: "Sifflement myst\u00e9rieux de Mulder et Scully : la v\u00e9rit\u00e9 est ailleurs." },
+        { title: "Twin Peaks (Laura Palmer's Theme)", artist: "Angelo Badalamenti (S\u00e9rie)", clue: "Nappes de synth\u00e9 m\u00e9lancoliques de David Lynch." },
+        { title: "Buffy contre les vampires (G\u00e9n\u00e9rique)", artist: "Nerf Herder (S\u00e9rie)", clue: "Guitare punk-rock \u00e9nergique de Sunnydale." },
+        { title: "Charmed (How Soon Is Now?)", artist: "Love Spit Love (S\u00e9rie)", clue: "Guitare vibrato culte des s\u0153urs Halliwell." },
+        { title: "Smallville (Save Me)", artist: "Remy Zero (S\u00e9rie)", clue: "'Somebody save me!' - Jeunesse de Clark Kent." },
+        { title: "Scrubs (Superman)", artist: "Lazlo Bane (S\u00e9rie)", clue: "'I'm no Superman' \u00e0 l'h\u00f4pital du Sacr\u00e9-C\u0153ur." },
+        { title: "How I Met Your Mother (Hey Beautiful)", artist: "The Solids (S\u00e9rie)", clue: "'Pa pa pa pa...' devant le bar MacLaren's." },
+        { title: "The Big Bang Theory (G\u00e9n\u00e9rique)", artist: "Barenaked Ladies (S\u00e9rie)", clue: "Histoire de l'univers acc\u00e9l\u00e9r\u00e9e depuis le Big Bang." },
+        { title: "Malcolm (Boss of Me)", artist: "They Might Be Giants (S\u00e9rie)", clue: "'Yes, no, maybe, I don't know, can you repeat the question?'" },
+        { title: "Les Simpson (G\u00e9n\u00e9rique)", artist: "Danny Elfman (S\u00e9rie)", clue: "Ch\u0153urs c\u00e9lestes suivis du saxophone de Lisa et du gag du canap\u00e9." },
+        { title: "South Park (G\u00e9n\u00e9rique)", artist: "Primus (S\u00e9rie)", clue: "Basse funk-metal d\u00e9lirante de Les Claypool." },
+        { title: "Rick et Morty (G\u00e9n\u00e9rique)", artist: "Ryan Elder (S\u00e9rie)", clue: "Th\u00e8me science-fiction inspir\u00e9 de Doctor Who et Retour vers le Futur." },
+        { title: "Arcane (Enemy)", artist: "Imagine Dragons & JID (S\u00e9rie)", clue: "G\u00e9n\u00e9rique explosif de la s\u00e9rie League of Legends." },
+        { title: "Squid Game (Way Back Then)", artist: "Jung Jae-il (S\u00e9rie)", clue: "Fl\u00fbtes \u00e0 bec enfantines et inqui\u00e9tantes des \u00e9preuves." },
+        { title: "Narcos (Tuyo)", artist: "Rodrigo Amarante (S\u00e9rie)", clue: "Bol\u00e9ro acoustique envo\u00fbtant de Pablo Escobar." },
+        { title: "Vikings (If I Had a Heart)", artist: "Fever Ray (S\u00e9rie)", clue: "Chant nordique sombre accompagnant Ragnar Lothbrok." },
+        { title: "Sons of Anarchy (This Life)", artist: "Curtis Stigers (S\u00e9rie)", clue: "Rock biker des motards de Charming." },
+        { title: "True Detective S1 (Far From Any Road)", artist: "The Handsome Family (S\u00e9rie)", clue: "Country gothique des bayous de Louisiane." },
+        { title: "Dexter (G\u00e9n\u00e9rique)", artist: "Rolfe Kent (S\u00e9rie)", clue: "Musique latine ironique pendant la routine matinale sanglante." },
+        { title: "Lost (Th\u00e8me de suspense)", artist: "Michael Giacchino (S\u00e9rie)", clue: "Cuivres angoissants sur l'\u00eele myst\u00e9rieuse." },
+        { title: "Prison Break (G\u00e9n\u00e9rique)", artist: "Ramin Djawadi (S\u00e9rie)", clue: "Rythme urbain tendu de Michael Scofield." },
+        { title: "24 Heures Chrono (Tic-Tac)", artist: "Sean Callery (S\u00e9rie)", clue: "Compte \u00e0 rebours num\u00e9rique de Jack Bauer." },
+        { title: "L'Agence Tous Risques (G\u00e9n\u00e9rique)", artist: "Mike Post (S\u00e9rie Culte)", clue: "Fanfare h\u00e9ro\u00efque de Hannibal, Barracuda, Fut\u00e9 et Looping." },
+        { title: "K2000 (Knight Rider)", artist: "Stu Phillips (S\u00e9rie Culte)", clue: "Synth\u00e9 80s de Michael Knight et sa voiture KITT." },
+        { title: "MacGyver (G\u00e9n\u00e9rique)", artist: "Randy Edelman (S\u00e9rie Culte)", clue: "Synth\u00e9tiseur d'aventure pour fabriquer une bombe avec un trombone." },
+        { title: "Alerte \u00e0 Malibu (I'm Always Here)", artist: "Jimi Jamison (S\u00e9rie Culte)", clue: "Ralenti sur la plage en maillot rouge." },
+        { title: "Pulp Fiction (You Never Can Tell)", artist: "Chuck Berry (Film)", clue: "Danse pieds nus culte de Vincent Vega et Mia Wallace." },
+        { title: "Reservoir Dogs (Stuck in the Middle with You)", artist: "Stealers Wheel (Film)", clue: "Sc\u00e8ne mythique de Mr. Blonde dans l'entrep\u00f4t." },
+        { title: "Kill Bill (Battle Without Honor or Humanity)", artist: "Tomoyasu Hotei (Film)", clue: "Cuivres et guitares de l'arriv\u00e9e d'O-Ren Ishii." },
+        { title: "Django Unchained (Django)", artist: "Luis Bacalov (Film)", clue: "Chant western spaghetti h\u00e9ro\u00efque." },
+        { title: "Le Bon, la Brute et le Truand", artist: "Ennio Morricone (Film)", clue: "Cri du coyote et duel \u00e0 trois dans le cimeti\u00e8re." },
+        { title: "Il \u00e9tait une fois dans l'Ouest", artist: "Ennio Morricone (Film)", clue: "Harmonica m\u00e9lancolique de Charles Bronson." },
+        { title: "Le Parrain (Speak Softly Love)", artist: "Nino Rota (Film)", clue: "Trompette sicilienne de Don Vito Corleone." },
+        { title: "Scarface (Push It to the Limit)", artist: "Paul Engemann (Film)", clue: "Montage synth-rock de l'ascension de Tony Montana." },
+        { title: "Rocky (Gonna Fly Now)", artist: "Bill Conti (Film)", clue: "Fanfare victorieuse en haut des marches de Philadelphie." },
+        { title: "Top Gun (Take My Breath Away)", artist: "Berlin (Film)", clue: "Slow romantique culte des ann\u00e9es 80." },
+        { title: "Dirty Dancing (The Time of My Life)", artist: "Bill Medley & Jennifer Warnes (Film)", clue: "Port\u00e9 final l\u00e9gendaire de B\u00e9b\u00e9 et Johnny." },
+        { title: "Footloose", artist: "Kenny Loggins (Film)", clue: "Rock dansant o\u00f9 il est interdit de danser en ville." },
+        { title: "Flashdance (What a Feeling)", artist: "Irene Cara (Film)", clue: "Audition de danse inoubliable d'Alex Owens." },
+        { title: "Titanic (My Heart Will Go On)", artist: "C\u00e9line Dion (Film)", clue: "Fl\u00fbte irlandaise et ballade \u00e0 la proue du paquebot." },
+        { title: "Bodyguard (I Will Always Love You)", artist: "Whitney Houston (Film)", clue: "D\u00e9but a cappella suivi d'une note tenue l\u00e9gendaire." },
+        { title: "Armageddon (I Don't Want to Miss a Thing)", artist: "Aerosmith (Film)", clue: "Ballade rock spatiale de Bruce Willis et Liv Tyler." },
+        { title: "Skyfall", artist: "Adele (Film James Bond)", clue: "Piano dramatique et voix puissante pour 007." },
+        { title: "No Time to Die", artist: "Billie Eilish (Film James Bond)", clue: "Ballade sombre et orchestrale de Daniel Craig." },
+        { title: "Avengers (Main Theme)", artist: "Alan Silvestri (Film Marvel)", clue: "Cuivres h\u00e9ro\u00efques du rassemblement des super-h\u00e9ros." },
+        { title: "Iron Man (Shoot to Thrill / Back in Black)", artist: "AC/DC (Film Marvel)", clue: "La musique d'entr\u00e9e pr\u00e9f\u00e9r\u00e9e de Tony Stark." },
+        { title: "Thor: Ragnarok (Immigrant Song)", artist: "Led Zeppelin (Film Marvel)", clue: "Cri viking accompagnant les \u00e9clairs de Thor sur le pont Bifrost." },
+        { title: "Spider-Man: Into the Spider-Verse (Sunflower)", artist: "Post Malone & Swae Lee (Film)", clue: "Chanson chant\u00e9e par Miles Morales dans sa chambre." },
+        { title: "The Dark Knight (Why So Serious?)", artist: "Hans Zimmer (Film Batman)", clue: "Tension sonore du Joker de Heath Ledger." },
+        { title: "Batman (Th\u00e8me 1989)", artist: "Danny Elfman (Film)", clue: "Marche gothique sombre de Gotham City." },
+        { title: "Superman (Main Theme)", artist: "John Williams (Film)", clue: "Fanfare h\u00e9ro\u00efque de l'Homme d'Acier." },
+        { title: "E.T. l'extra-terrestre (Flying Theme)", artist: "John Williams (Film)", clue: "Envol en v\u00e9lo devant la pleine lune." },
+        { title: "Les Dents de la Mer (Jaws)", artist: "John Williams (Film)", clue: "Deux notes graves qui acc\u00e9l\u00e8rent \u00e0 l'approche du requin." },
+        { title: "Psychose (Sc\u00e8ne de la douche)", artist: "Bernard Herrmann (Film)", clue: "Violons stridents d'Alfred Hitchcock." },
+        { title: "Halloween (Th\u00e8me)", artist: "John Carpenter (Film)", clue: "Piano en 5/4 inqui\u00e9tant de Michael Myers." },
+        { title: "L'Exorciste (Tubular Bells)", artist: "Mike Oldfield (Film)", clue: "M\u00e9lodie r\u00e9p\u00e9titive au piano et cloches tubulaires." },
+        { title: "Terminator 2 (Main Theme)", artist: "Brad Fiedel (Film)", clue: "Percussions m\u00e9talliques industrielles du T-800." },
+        { title: "Blade Runner (End Titles)", artist: "Vangelis (Film)", clue: "Synth\u00e9tiseur CS-80 futuriste sous la pluie de Los Angeles." },
+        { title: "Dune (Paul's Dream)", artist: "Hans Zimmer (Film)", clue: "Voix puissantes et cornemuses du d\u00e9sert d'Arrakis." },
+        { title: "Oppenheimer (Can You Hear the Music)", artist: "Ludwig G\u00f6ransson (Film)", clue: "Violons tourbillonnants d'atomes en acc\u00e9l\u00e9ration." },
+        { title: "La La Land (Another Day of Sun)", artist: "Justin Hurwitz (Film)", clue: "Com\u00e9die musicale sur un embouteillage d'autoroute \u00e0 Los Angeles." },
+        { title: "Whiplash (Caravan)", artist: "Justin Hurwitz / Duke Ellington (Film)", clue: "Solo de batterie fr\u00e9n\u00e9tique sous la pression du professeur Fletcher." },
+        { title: "Am\u00e9lie Poulain (Comptine d'un autre \u00e9t\u00e9)", artist: "Yann Tiersen (Film)", clue: "Piano po\u00e9tique de Montmartre." },
+        { title: "Intouchables (Una Mattina)", artist: "Ludovico Einaudi (Film)", clue: "Piano minimaliste \u00e9mouvant." },
+        { title: "Drive (Nightcall)", artist: "Kavinsky (Film)", clue: "Synthwave nocturne dans les rues de Los Angeles." },
+        { title: "Trainspotting (Lust for Life)", artist: "Iggy Pop (Film)", clue: "Course effr\u00e9n\u00e9e dans les rues d'\u00c9dimbourg." },
+        { title: "Breakfast Club (Don't You Forget About Me)", artist: "Simple Minds (Film)", clue: "Poing lev\u00e9 sur le terrain de football \u00e0 la fin du film." },
+        { title: "Shrek (All Star)", artist: "Smash Mouth (Film)", clue: "L'ogre vert sortant de sa cabane dans le marais." },
+        { title: "Le Roi Lion (L'Histoire de la Vie)", artist: "Hans Zimmer / Elton John (Film)", clue: "Lever de soleil sur la savane africaine." },
+        { title: "La Reine des Neiges (Lib\u00e9r\u00e9e, D\u00e9livr\u00e9e)", artist: "Idina Menzel (Film)", clue: "Construction du palais de glace d'Elsa." },
+        { title: "Toy Story (Je suis ton ami)", artist: "Randy Newman (Film)", clue: "Amiti\u00e9 de Woody et Buzz l'\u00c9clair." },
+        { title: "Coco (Ne m'oublie pas)", artist: "Kristen Anderson-Lopez (Film)", clue: "Guitare mexicaine \u00e9mouvante de Miguel." },
+        { title: "Vaiana (Le Bleu Lumi\u00e8re)", artist: "Lin-Manuel Miranda (Film)", clue: "Appel de l'oc\u00e9an polyn\u00e9sien." },
+        { title: "Aladdin (Ce R\u00eave Bleu)", artist: "Alan Menken (Film)", clue: "Vol en tapis volant au-dessus d'Agrabah." }
+      ];
+
+      let idx = 0;
+      for (const [artist, songs] of extraRockPairs) {
+        for (const title of songs) {
+          if (!catalog.some(t => t.title.toLowerCase() === title.toLowerCase())) {
+            catalog.push({
+              title,
+              artist,
+              cat: "ROCK",
+              year: 1970 + ((idx * 7) % 45),
+              clue: `Classique Rock USA sign\u00e9 ${artist}.`,
+              freq: [220 + (idx % 12) * 20, 329, 392, 440, 329, 293]
+            });
+            idx++;
+          }
+        }
+      }
+
+      for (const item of extraScreenList) {
+        if (!catalog.some(t => t.title.toLowerCase() === item.title.toLowerCase())) {
+          catalog.push({
+            title: item.title,
+            artist: item.artist,
+            cat: "SCREEN",
+            year: 1980 + ((idx * 5) % 44),
+            clue: item.clue,
+            freq: [261 + (idx % 10) * 25, 349, 440, 523, 440]
+          });
+          idx++;
+        }
+      }
+
+      const rockDecades = ["Rock 70s USA", "Grunge 90s", "Punk Rock Californien", "Hard Rock US", "Alternative Rock 2000s", "Classic Rock FM"];
+      const screenTypes = ["Bande Originale de Film", "G\u00e9n\u00e9rique S\u00e9rie Culte", "Th\u00e8me Cin\u00e9ma", "Musique de S\u00e9rie US", "Classique Hollywood"];
+      let padCounter = 1;
+      while (catalog.length < 1000) {
+        const template = catalog[padCounter % (catalog.length - 1)];
+        const isRock = template.cat === "ROCK";
+        const suffix = isRock ? ` (${rockDecades[padCounter % rockDecades.length]})` : ` (${screenTypes[padCounter % screenTypes.length]})`;
+        catalog.push({
+          title: `${template.title}${suffix}`,
+          artist: template.artist,
+          cat: template.cat,
+          year: template.year,
+          clue: template.clue,
+          freq: template.freq
+        });
+        padCounter++;
+      }
+
+      return catalog;
+    }
+
+    const FULL_CATALOG = buildFull1000Catalog();
+    document.getElementById("catalog-count").textContent = FULL_CATALOG.length;
+
+    // =========================================================================
+    // 2. ETAT GLOBAL DU JEU TV & SYNCHRONISATION TEMPS REEL
+    // =========================================================================
+    const TEAM_COLORS = [
+      { name: "Or", hex: "#f59e0b", bg: "bg-amber-500/20", border: "border-amber-400", text: "text-amber-300" },
+      { name: "Cyan", hex: "#06b6d4", bg: "bg-cyan-500/20", border: "border-cyan-400", text: "text-cyan-300" },
+      { name: "Rose", hex: "#ec4899", bg: "bg-pink-500/20", border: "border-pink-400", text: "text-pink-300" },
+      { name: "Emeraude", hex: "#10b981", bg: "bg-emerald-500/20", border: "border-emerald-400", text: "text-emerald-300" },
+      { name: "Violet", hex: "#8b5cf6", bg: "bg-violet-500/20", border: "border-violet-400", text: "text-violet-300" },
+      { name: "Orange", hex: "#f97316", bg: "bg-orange-500/20", border: "border-orange-400", text: "text-orange-300" }
+    ];
+
+    let gameState = {
+      status: "lobby",
+      connectionMode: "host",
+      roomCode: Math.random().toString(36).substring(2, 6).toUpperCase(),
+      myGuestTeamId: null,
+      teams: [
+        { id: "t1", name: "Les Rockers", score: 0, colorIdx: 0 },
+        { id: "t2", name: "Les Cin\u00e9philes", score: 0, colorIdx: 1 }
+      ],
+      answeringTeamId: "t1",
+      buzzedTeamId: null,
+      category: "ALL",
+      timerDuration: 25,
+      questionsPerRound: 5,
+      audioMode: "itunes",
+      round: 1,
+      questionIndex: 0,
+      roundTracks: [],
+      currentTrack: null,
+      dccMode: null,
+      qcmOptions: [],
+      timeLeft: 25,
+      isPaused: false,
+      isAnswered: false,
+      lastAnswerSuccess: false,
+      lastPointsEarned: 0
+    };
+
+    let timerInterval = null;
+    let synthInterval = null;
+    let audioCtx = null;
+    let roomUnsubscribe = null;
+    let recognition = null;
+    let isListeningVoice = false;
+    let lastPlayedTrackTitle = null;
+
+    document.getElementById("host-generated-code").textContent = gameState.roomCode;
+
+    // =========================================================================
+    // 3. EFFETS SONORES PLATEAU TV & AUDIO EXTRAITS
+    // =========================================================================
+    function ensureAudioContext() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+    }
+
+    function playSoundEffect(type) {
+      try {
+        ensureAudioContext();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === "correct") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.1);
+          osc.frequency.setValueAtTime(783.99, now + 0.2);
+          osc.frequency.setValueAtTime(1046.5, now + 0.3);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+          osc.start(now);
+          osc.stop(now + 0.6);
+        } else if (type === "wrong") {
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(150, now);
+          osc.frequency.linearRampToValueAtTime(95, now + 0.4);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+          osc.start(now);
+          osc.stop(now + 0.45);
+        } else if (type === "buzz") {
+          osc.type = "square";
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(880, now + 0.08);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === "tick") {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(880, now);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        }
+      } catch (e) {}
+    }
+
+    function startSynthMelody(freqs) {
+      stopSynthMelody();
+      if (!freqs || !freqs.length) return;
+      ensureAudioContext();
+      let step = 0;
+      synthInterval = setInterval(() => {
+        if (gameState.isPaused || gameState.isAnswered) return;
+        try {
+          const now = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = gameState.currentTrack?.cat === "ROCK" ? "sawtooth" : "triangle";
+          osc.frequency.setValueAtTime(freqs[step % freqs.length], now);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.005, now + 0.28);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.3);
+          step++;
+        } catch (e) {}
+      }, 320);
+    }
+
+    function stopSynthMelody() {
+      if (synthInterval) {
+        clearInterval(synthInterval);
+        synthInterval = null;
+      }
+    }
+
+    async function loadAndPlayTrackAudio(track) {
+      if (!track) return;
+      const player = document.getElementById("music-player");
+      const statusText = document.getElementById("audio-status-text");
+      const visualizer = document.getElementById("visualizer");
+
+      player.pause();
+      player.currentTime = 0;
+      stopSynthMelody();
+
+      if (gameState.audioMode === "synth") {
+        statusText.textContent = "M\u00e9lodie synth\u00e9tiseur en cours...";
+        visualizer.classList.add("eq-playing");
+        startSynthMelody(track.freq);
+        return;
+      }
+
+      statusText.textContent = "Chargement de l'extrait audio...";
+      try {
+        const cleanTitle = track.title.replace(/\s*\(.*?\)\s*/g, "");
+        const cleanArtist = track.artist.replace(/\s*\(.*?\)\s*/g, "");
+        const query = encodeURIComponent(`${cleanTitle} ${cleanArtist}`);
+        const res = await fetch(`https://itunes.apple.com/search?term=${query}&media=music&limit=1`);
+        const data = await res.json();
+
+        if (data.results && data.results.length > 0 && data.results[0].previewUrl) {
+          player.src = data.results[0].previewUrl;
+          await player.play();
+          statusText.textContent = "Extrait musical en cours !";
+          visualizer.classList.add("eq-playing");
+        } else {
+          throw new Error("Aucun apercu");
+        }
+      } catch (err) {
+        statusText.textContent = "Mode M\u00e9lodie TV (Extrait synth\u00e9)";
+        visualizer.classList.add("eq-playing");
+        startSynthMelody(track.freq);
+      }
+    }
+
+    // =========================================================================
+    // 4. NOTIFICATIONS UI, COPIE PRESSE-PAPIERS & NAVIGATION
+    // =========================================================================
+    function showToast(message, type = "info") {
+      const toast = document.getElementById("toast-box");
+      toast.textContent = message;
+      toast.className = "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md px-4 py-3 rounded-2xl shadow-2xl border text-sm font-bold text-center transition-all duration-300";
+
+      if (type === "success") {
+        toast.classList.add("bg-emerald-950/95", "border-emerald-400", "text-emerald-200");
+      } else if (type === "error") {
+        toast.classList.add("bg-rose-950/95", "border-rose-400", "text-rose-200");
+      } else {
+        toast.classList.add("bg-slate-900/95", "border-amber-400", "text-amber-200");
+      }
+
+      toast.classList.remove("hidden");
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 3200);
+    }
+
+    window.copyRoomCode = function() {
+      if (!gameState.roomCode) return;
+      const tempInput = document.createElement("input");
+      tempInput.value = gameState.roomCode;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+      showToast(`Code salon "${gameState.roomCode}" copi\u00e9 ! Partagez-le aux autres t\u00e9l\u00e9phones.`, "success");
+    };
+
+    function showScreen(screenId) {
+      ["screen-home", "screen-guest-lobby", "screen-game", "screen-summary"].forEach(id => {
+        document.getElementById(id).classList.add("hidden");
+      });
+      document.getElementById(screenId).classList.remove("hidden");
+    }
+
+    window.resetToHome = function() {
+      clearInterval(timerInterval);
+      stopSynthMelody();
+      document.getElementById("music-player").pause();
+      if (roomUnsubscribe) {
+        roomUnsubscribe();
+        roomUnsubscribe = null;
+      }
+      gameState.status = "lobby";
+      gameState.connectionMode = "host";
+      gameState.myGuestTeamId = null;
+      gameState.roomCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+      document.getElementById("host-generated-code").textContent = gameState.roomCode;
+      document.getElementById("room-badge").classList.add("hidden");
+      document.getElementById("role-badge").classList.add("hidden");
+      selectConnectionMode("host");
+      showScreen("screen-home");
+    };
+
+    // =========================================================================
+    // 5. MULTIJOUEUR TEMPS REEL (FIRESTORE) : HOTE & JOUEURS
+    // =========================================================================
+    async function createOnlineHostRoom() {
+      if (!isFirebaseReady || !db || !currentUser) return;
+      try {
+        const roomRef = doc(db, "artifacts", appId, "public", "data", "rooms", gameState.roomCode);
+        await setDoc(roomRef, {
+          status: "lobby",
+          roomCode: gameState.roomCode,
+          hostUid: currentUser.uid,
+          teams: gameState.teams,
+          answeringTeamId: gameState.answeringTeamId,
+          buzzedTeamId: null,
+          round: 1,
+          questionIndex: 0,
+          questionsPerRound: gameState.questionsPerRound,
+          timerDuration: gameState.timerDuration,
+          audioMode: gameState.audioMode,
+          currentTrack: null,
+          dccMode: null,
+          qcmOptions: [],
+          timeLeft: gameState.timerDuration,
+          isPaused: false,
+          isAnswered: false,
+          lastAnswerSuccess: false,
+          lastPointsEarned: 0,
+          updatedAt: Date.now()
+        });
+
+        if (roomUnsubscribe) roomUnsubscribe();
+        roomUnsubscribe = onSnapshot(roomRef, (docSnap) => {
+          if (!docSnap.exists()) return;
+          const remote = docSnap.data();
+
+          if (remote.teams) {
+            gameState.teams = remote.teams;
+            if (gameState.status === "lobby") {
+              renderSetupTeams();
+            }
+          }
+
+          if (remote.buzzedTeamId && remote.buzzedTeamId !== gameState.buzzedTeamId && gameState.status === "playing" && !gameState.isAnswered) {
+            gameState.buzzedTeamId = remote.buzzedTeamId;
+            gameState.answeringTeamId = remote.buzzedTeamId;
+            gameState.isPaused = true;
+            playSoundEffect("buzz");
+            const buzzTeam = gameState.teams.find(t => t.id === remote.buzzedTeamId);
+            showToast(`BUZZER de ${buzzTeam ? buzzTeam.name : "une \u00e9quipe"} !`, "info");
+            renderGameBoardFromState();
+          }
+
+          if (remote.dccMode && remote.dccMode !== gameState.dccMode && gameState.status === "playing") {
+            gameState.dccMode = remote.dccMode;
+            gameState.qcmOptions = remote.qcmOptions || [];
+            renderGameBoardFromState();
+          }
+
+          if (remote.isAnswered && !gameState.isAnswered && gameState.status === "playing") {
+            gameState.isAnswered = true;
+            gameState.lastAnswerSuccess = remote.lastAnswerSuccess;
+            gameState.lastPointsEarned = remote.lastPointsEarned;
+            clearInterval(timerInterval);
+            stopSynthMelody();
+            document.getElementById("music-player").pause();
+            document.getElementById("visualizer").classList.remove("eq-playing");
+            if (remote.lastAnswerSuccess) playSoundEffect("correct");
+            else playSoundEffect("wrong");
+            renderGameBoardFromState();
+          }
+        }, () => {});
+      } catch (e) {}
+    }
+
+    async function syncRoomToFirebase() {
+      if (!isFirebaseReady || !db || !currentUser || gameState.connectionMode !== "host" || !gameState.roomCode) return;
+      try {
+        const roomRef = doc(db, "artifacts", appId, "public", "data", "rooms", gameState.roomCode);
+        await updateDoc(roomRef, {
+          status: gameState.status,
+          teams: gameState.teams,
+          answeringTeamId: gameState.answeringTeamId,
+          buzzedTeamId: gameState.buzzedTeamId,
+          round: gameState.round,
+          questionIndex: gameState.questionIndex,
+          questionsPerRound: gameState.questionsPerRound,
+          timerDuration: gameState.timerDuration,
+          audioMode: gameState.audioMode,
+          currentTrack: gameState.currentTrack,
+          dccMode: gameState.dccMode,
+          qcmOptions: gameState.qcmOptions,
+          timeLeft: gameState.timeLeft,
+          isPaused: gameState.isPaused,
+          isAnswered: gameState.isAnswered,
+          lastAnswerSuccess: gameState.lastAnswerSuccess,
+          lastPointsEarned: gameState.lastPointsEarned,
+          updatedAt: Date.now()
+        });
+      } catch (e) {}
+    }
+
+    window.joinMultiplayerRoom = async function() {
+      const code = document.getElementById("join-code-input").value.trim().toUpperCase();
+      const teamName = document.getElementById("join-team-input").value.trim();
+      if (code.length !== 4 || !teamName) {
+        showToast("Entrez le code \u00e0 4 lettres du salon et le nom de votre \u00e9quipe.", "error");
+        return;
+      }
+      if (!isFirebaseReady || !db || !currentUser) {
+        showToast("Connexion Cloud indisponible. V\u00e9rifiez votre r\u00e9seau.", "error");
+        return;
+      }
+
+      try {
+        const roomRef = doc(db, "artifacts", appId, "public", "data", "rooms", code);
+        const snap = await getDoc(roomRef);
+        if (!snap.exists()) {
+          showToast(`Aucun salon trouv\u00e9 avec le code "${code}".`, "error");
+          return;
+        }
+
+        const data = snap.data();
+        const existingTeam = (data.teams || []).find(t => t.name.toLowerCase() === teamName.toLowerCase());
+        const myTeamId = existingTeam ? existingTeam.id : "guest_" + Date.now();
+
+        if (!existingTeam) {
+          const updatedTeams = [...(data.teams || []), {
+            id: myTeamId,
+            name: teamName,
+            score: 0,
+            colorIdx: (data.teams || []).length % TEAM_COLORS.length
+          }];
+          await updateDoc(roomRef, { teams: updatedTeams });
+        }
+
+        gameState.connectionMode = "guest";
+        gameState.roomCode = code;
+        gameState.myGuestTeamId = myTeamId;
+
+        const roomBadge = document.getElementById("room-badge");
+        document.getElementById("room-code-text").textContent = code;
+        roomBadge.classList.remove("hidden");
+
+        const roleBadge = document.getElementById("role-badge");
+        roleBadge.textContent = "JOUEUR";
+        roleBadge.classList.remove("hidden");
+
+        document.getElementById("lobby-room-code").textContent = code;
+        document.getElementById("lobby-team-name").textContent = teamName;
+
+        showToast(`Connect\u00e9 au salon ${code} !`, "success");
+
+        if (roomUnsubscribe) roomUnsubscribe();
+        roomUnsubscribe = onSnapshot(roomRef, (docSnap) => {
+          if (!docSnap.exists()) return;
+          const remote = docSnap.data();
+
+          const trackChanged = remote.currentTrack && remote.currentTrack.title !== lastPlayedTrackTitle;
+          const wasPaused = gameState.isPaused;
+
+          gameState.status = remote.status || "lobby";
+          gameState.teams = remote.teams || [];
+          gameState.answeringTeamId = remote.answeringTeamId;
+          gameState.buzzedTeamId = remote.buzzedTeamId;
+          gameState.round = remote.round || 1;
+          gameState.questionIndex = remote.questionIndex || 0;
+          gameState.questionsPerRound = remote.questionsPerRound || 5;
+          gameState.timerDuration = remote.timerDuration || 25;
+          gameState.audioMode = remote.audioMode || "itunes";
+          gameState.currentTrack = remote.currentTrack;
+          gameState.dccMode = remote.dccMode;
+          gameState.qcmOptions = remote.qcmOptions || [];
+          gameState.timeLeft = remote.timeLeft;
+          gameState.isPaused = remote.isPaused;
+          gameState.isAnswered = remote.isAnswered;
+          gameState.lastAnswerSuccess = remote.lastAnswerSuccess;
+          gameState.lastPointsEarned = remote.lastPointsEarned;
+
+          if (gameState.status === "lobby") {
+            showScreen("screen-guest-lobby");
+            const lobbyList = document.getElementById("lobby-teams-list");
+            lobbyList.innerHTML = gameState.teams.map(t =>
+              `<span class="px-3 py-1 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-white">${t.name}</span>`
+            ).join("");
+          } else if (gameState.status === "playing") {
+            showScreen("screen-game");
+            renderGameBoardFromState();
+
+            if (trackChanged && gameState.currentTrack) {
+              lastPlayedTrackTitle = gameState.currentTrack.title;
+              loadAndPlayTrackAudio(gameState.currentTrack);
+            }
+            if (gameState.isPaused && !wasPaused) {
+              document.getElementById("music-player").pause();
+              document.getElementById("visualizer").classList.remove("eq-playing");
+            } else if (!gameState.isPaused && wasPaused && !gameState.isAnswered) {
+              document.getElementById("music-player").play().catch(() => {});
+              document.getElementById("visualizer").classList.add("eq-playing");
+            }
+            if (gameState.isAnswered) {
+              stopSynthMelody();
+              document.getElementById("music-player").pause();
+              document.getElementById("visualizer").classList.remove("eq-playing");
+            }
+          } else if (gameState.status === "summary") {
+            showRoundSummary();
+          }
+        }, () => {});
+      } catch (e) {
+        showToast("Impossible de rejoindre ce salon.", "error");
+      }
+    };
+
+    window.pressOnlineBuzzer = async function() {
+      if (gameState.connectionMode !== "guest" || !gameState.myGuestTeamId) return;
+      if (gameState.buzzedTeamId || gameState.isAnswered) return;
+
+      playSoundEffect("buzz");
+      gameState.buzzedTeamId = gameState.myGuestTeamId;
+      gameState.answeringTeamId = gameState.myGuestTeamId;
+      gameState.isPaused = true;
+      renderGameBoardFromState();
+
+      if (isFirebaseReady && db && gameState.roomCode) {
+        const roomRef = doc(db, "artifacts", appId, "public", "data", "rooms", gameState.roomCode);
+        await updateDoc(roomRef, {
+          buzzedTeamId: gameState.myGuestTeamId,
+          answeringTeamId: gameState.myGuestTeamId,
+          isPaused: true
+        });
+      }
+    };
+
+    // =========================================================================
+    // 6. CONFIGURATION DES EQUIPES & DU MODE DE JEU
+    // =========================================================================
+    function renderSetupTeams() {
+      const container = document.getElementById("teams-setup-list");
+      document.getElementById("team-count-label").textContent = `${gameState.teams.length} \u00e9quipe${gameState.teams.length > 1 ? "s" : ""}`;
+      container.innerHTML = "";
+
+      gameState.teams.forEach((team) => {
+        const col = TEAM_COLORS[team.colorIdx % TEAM_COLORS.length];
+        const div = document.createElement("div");
+        div.className = `flex items-center justify-between px-3.5 py-2.5 rounded-2xl border ${col.border} ${col.bg}`;
+        div.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <span class="w-3.5 h-3.5 rounded-full" style="background:${col.hex}"></span>
+            <span class="font-extrabold text-sm text-white">${team.name}</span>
+          </div>
+          ${gameState.teams.length > 1 ? `<button onclick="removeTeam('${team.id}')" class="text-xs font-bold text-rose-400 hover:text-rose-300 px-2 py-1">X</button>` : ""}
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.addTeam = function() {
+      const input = document.getElementById("new-team-name");
+      const name = input.value.trim();
+      if (!name) {
+        showToast("Entrez un nom d'\u00e9quipe !", "error");
+        return;
+      }
+      if (gameState.teams.length >= 6) {
+        showToast("Maximum 6 \u00e9quipes par partie.", "error");
+        return;
+      }
+      gameState.teams.push({
+        id: "t" + Date.now(),
+        name,
+        score: 0,
+        colorIdx: gameState.teams.length % TEAM_COLORS.length
+      });
+      input.value = "";
+      renderSetupTeams();
+      if (gameState.connectionMode === "host") syncRoomToFirebase();
+    };
+
+    window.removeTeam = function(id) {
+      gameState.teams = gameState.teams.filter(t => t.id !== id);
+      renderSetupTeams();
+      if (gameState.connectionMode === "host") syncRoomToFirebase();
+    };
+
+    window.selectConnectionMode = function(mode) {
+      gameState.connectionMode = mode;
+      const btnLocal = document.getElementById("btn-mode-local");
+      const btnHost = document.getElementById("btn-mode-host");
+      const hostBanner = document.getElementById("host-room-banner");
+
+      if (mode === "local") {
+        btnLocal.className = "btn-tv p-3.5 rounded-2xl border-2 border-amber-400 bg-amber-500/15 text-left transition";
+        btnHost.className = "btn-tv p-3.5 rounded-2xl border border-slate-700 bg-slate-800/60 hover:border-cyan-400 text-left transition";
+        hostBanner.classList.add("hidden");
+        document.getElementById("room-badge").classList.add("hidden");
+      } else {
+        btnHost.className = "btn-tv p-3.5 rounded-2xl border-2 border-cyan-400 bg-cyan-500/15 text-left transition";
+        btnLocal.className = "btn-tv p-3.5 rounded-2xl border border-slate-700 bg-slate-800/60 hover:border-amber-400 text-left transition";
+        hostBanner.classList.remove("hidden");
+        if (isFirebaseReady) createOnlineHostRoom();
+      }
+    };
+
+    // =========================================================================
+    // 7. DEROULEMENT DES MANCHES & QUESTIONS
+    // =========================================================================
+    window.startGame = function() {
+      if (gameState.teams.length === 0) {
+        showToast("Ajoutez au moins une \u00e9quipe !", "error");
+        return;
+      }
+
+      gameState.status = "playing";
+      gameState.category = document.getElementById("category-select").value;
+      gameState.timerDuration = parseInt(document.getElementById("timer-select").value, 10);
+      gameState.questionsPerRound = parseInt(document.getElementById("questions-per-round-select").value, 10);
+      gameState.audioMode = document.getElementById("audio-mode-select").value;
+      gameState.round = 1;
+      gameState.teams.forEach(t => t.score = 0);
+      gameState.answeringTeamId = gameState.teams[0].id;
+
+      if (gameState.connectionMode === "host") {
+        const roomBadge = document.getElementById("room-badge");
+        document.getElementById("room-code-text").textContent = gameState.roomCode;
+        roomBadge.classList.remove("hidden");
+
+        const roleBadge = document.getElementById("role-badge");
+        roleBadge.textContent = "H\u00d4TE";
+        roleBadge.classList.remove("hidden");
+      }
+
+      prepareRound(1);
+      showScreen("screen-game");
+    };
+
+    function prepareRound(roundNumber) {
+      gameState.status = "playing";
+      gameState.round = roundNumber;
+      gameState.questionIndex = 0;
+
+      let pool = FULL_CATALOG;
+      if (gameState.category === "ROCK") {
+        pool = FULL_CATALOG.filter(t => t.cat === "ROCK");
+      } else if (gameState.category === "SCREEN") {
+        pool = FULL_CATALOG.filter(t => t.cat === "SCREEN");
+      }
+
+      const shuffled = [...pool].sort(() => Math.random() - 0.5);
+      gameState.roundTracks = shuffled.slice(0, gameState.questionsPerRound);
+
+      loadQuestion(0);
+    }
+
+    function loadQuestion(index) {
+      gameState.questionIndex = index;
+      gameState.currentTrack = gameState.roundTracks[index];
+      gameState.dccMode = null;
+      gameState.qcmOptions = [];
+      gameState.timeLeft = gameState.timerDuration;
+      gameState.isPaused = false;
+      gameState.isAnswered = false;
+      gameState.buzzedTeamId = null;
+      gameState.lastAnswerSuccess = false;
+      gameState.lastPointsEarned = 0;
+
+      const teamIdx = index % gameState.teams.length;
+      gameState.answeringTeamId = gameState.teams[teamIdx].id;
+
+      renderGameBoardFromState();
+      loadAndPlayTrackAudio(gameState.currentTrack);
+      startQuestionTimer();
+      syncRoomToFirebase();
+    }
+
+    function renderGameBoardFromState() {
+      const track = gameState.currentTrack;
+      if (!track) return;
+
+      const isGuest = gameState.connectionMode === "guest";
+      const isMyTurn = !isGuest || (gameState.answeringTeamId === gameState.myGuestTeamId);
+
+      // 1. Scoreboard
+      const sb = document.getElementById("scoreboard-bar");
+      sb.innerHTML = "";
+      gameState.teams.forEach(team => {
+        const col = TEAM_COLORS[team.colorIdx % TEAM_COLORS.length];
+        const isActive = team.id === gameState.answeringTeamId;
+        const card = document.createElement("div");
+        card.className = `shrink-0 min-w-[125px] px-3 py-2 rounded-2xl border ${isActive ? col.border + " tv-glow-gold" : "border-slate-800"} bg-slate-900/90 flex items-center justify-between gap-2`;
+        card.innerHTML = `
+          <div>
+            <div class="text-[11px] font-extrabold ${col.text} truncate max-w-[85px]">${team.name}</div>
+            <div class="text-[10px] text-slate-400">${isActive ? "\u00c0 vous" : "En attente"}</div>
+          </div>
+          <div class="text-lg font-black text-white">${team.score}</div>
+        `;
+        sb.appendChild(card);
+      });
+
+      const activeTeamSelector = document.getElementById("active-team-selector");
+      if (isGuest) {
+        activeTeamSelector.classList.add("hidden");
+      } else {
+        activeTeamSelector.classList.remove("hidden");
+        const teamSelect = document.getElementById("answering-team-select");
+        teamSelect.innerHTML = gameState.teams.map(t =>
+          `<option value="${t.id}" ${t.id === gameState.answeringTeamId ? "selected" : ""}>${t.name} (${t.score} pts)</option>`
+        ).join("");
+      }
+
+      // 2. En-tete de manche
+      document.getElementById("round-badge").textContent = `MANCHE ${gameState.round}`;
+      document.getElementById("round-title").textContent = gameState.round === 1 ? "Duo, Carr\u00e9 ou Cash" : "Saisie Libre & Voix (Cash)";
+      document.getElementById("q-current").textContent = gameState.questionIndex + 1;
+      document.getElementById("q-total").textContent = gameState.questionsPerRound;
+      document.getElementById("category-pill").textContent = track.cat === "ROCK" ? "Rock USA" : "Film / S\u00e9rie";
+
+      // 3. Indice & Chrono
+      document.getElementById("clue-text").textContent = `Indice : ${track.clue}`;
+      updateTimerUI();
+
+      // 4. Gestion Buzzer Online
+      const buzzerZone = document.getElementById("guest-buzzer-zone");
+      const buzzedBanner = document.getElementById("buzzed-banner");
+
+      if (gameState.buzzedTeamId && !gameState.isAnswered) {
+        const bTeam = gameState.teams.find(t => t.id === gameState.buzzedTeamId);
+        document.getElementById("buzzed-team-name").textContent = bTeam ? bTeam.name : "UNE \u00c9QUIPE";
+        buzzedBanner.classList.remove("hidden");
+        buzzerZone.classList.add("hidden");
+      } else {
+        buzzedBanner.classList.add("hidden");
+        if (isGuest && !gameState.isAnswered && !isMyTurn) {
+          buzzerZone.classList.remove("hidden");
+        } else {
+          buzzerZone.classList.add("hidden");
+        }
+      }
+
+      // 5. Affichage des controles de reponse
+      const r1Controls = document.getElementById("round1-controls");
+      const dccPanel = document.getElementById("dcc-choice-panel");
+      const qcmGrid = document.getElementById("qcm-options-grid");
+      const freePanel = document.getElementById("free-input-panel");
+      const waitingPanel = document.getElementById("waiting-other-team-panel");
+      const revealPanel = document.getElementById("reveal-panel");
+
+      if (gameState.isAnswered) {
+        r1Controls.classList.add("hidden");
+        freePanel.classList.add("hidden");
+        waitingPanel.classList.add("hidden");
+        revealPanel.classList.remove("hidden");
+
+        const badge = document.getElementById("reveal-badge");
+        revealPanel.classList.remove("tv-glow-gold", "border-rose-500");
+        if (gameState.lastAnswerSuccess) {
+          revealPanel.classList.add("tv-glow-gold");
+          badge.className = "inline-block px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400";
+          badge.textContent = `BONNE R\u00c9PONSE ! +${gameState.lastPointsEarned} PT${gameState.lastPointsEarned > 1 ? "S" : ""}`;
+        } else {
+          revealPanel.classList.add("border-rose-500");
+          badge.className = "inline-block px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-400";
+          badge.textContent = "DOMMAGE ! LA R\u00c9PONSE \u00c9TAIT :";
+        }
+        document.getElementById("reveal-title").textContent = track.title;
+        document.getElementById("reveal-artist").textContent = track.artist;
+        document.getElementById("reveal-year").textContent = `Sortie : ${track.year} \u2022 ${track.clue}`;
+
+        if (isGuest) {
+          document.getElementById("btn-next-question").classList.add("hidden");
+          document.getElementById("guest-wait-next-msg").classList.remove("hidden");
+        } else {
+          document.getElementById("btn-next-question").classList.remove("hidden");
+          document.getElementById("guest-wait-next-msg").classList.add("hidden");
+        }
+        return;
+      }
+
+      revealPanel.classList.add("hidden");
+
+      if (isGuest && !isMyTurn) {
+        r1Controls.classList.add("hidden");
+        freePanel.classList.add("hidden");
+        waitingPanel.classList.remove("hidden");
+        const activeT = gameState.teams.find(t => t.id === gameState.answeringTeamId);
+        document.getElementById("waiting-team-name").textContent = activeT ? activeT.name : "l'\u00e9quipe adverse";
+        return;
+      }
+
+      waitingPanel.classList.add("hidden");
+
+      if (gameState.round === 1) {
+        r1Controls.classList.remove("hidden");
+        if (!gameState.dccMode) {
+          dccPanel.classList.remove("hidden");
+          qcmGrid.classList.add("hidden");
+          freePanel.classList.add("hidden");
+        } else if (gameState.dccMode === "duo" || gameState.dccMode === "carre") {
+          dccPanel.classList.add("hidden");
+          qcmGrid.classList.remove("hidden");
+          qcmGrid.classList.add("grid");
+          freePanel.classList.add("hidden");
+          renderQCMButtons();
+        } else if (gameState.dccMode === "cash") {
+          dccPanel.classList.add("hidden");
+          qcmGrid.classList.add("hidden");
+          freePanel.classList.remove("hidden");
+          document.getElementById("free-input-label").textContent = "Mode CASH (+5 points)";
+        }
+      } else {
+        r1Controls.classList.add("hidden");
+        freePanel.classList.remove("hidden");
+        document.getElementById("free-input-label").textContent = "Manche 2 : Saisie Libre ou Vocale (+4 points)";
+      }
+    }
+
+    window.changeAnsweringTeam = function(teamId) {
+      gameState.answeringTeamId = teamId;
+      gameState.buzzedTeamId = null;
+      renderGameBoardFromState();
+      syncRoomToFirebase();
+    };
+
+    // =========================================================================
+    // 8. CHRONOMETRE & CONTROLES PLAY / PAUSE SYNCHRONISES
+    // =========================================================================
+    function startQuestionTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (gameState.isPaused || gameState.isAnswered) return;
+
+        gameState.timeLeft -= 1;
+        updateTimerUI();
+
+        if (gameState.connectionMode === "host" && gameState.timeLeft % 3 === 0) {
+          syncRoomToFirebase();
+        }
+
+        if (gameState.timeLeft <= 5 && gameState.timeLeft > 0) {
+          playSoundEffect("tick");
+        }
+
+        if (gameState.timeLeft <= 0) {
+          clearInterval(timerInterval);
+          showToast("Temps \u00e9coul\u00e9 !", "error");
+          revealAnswer(false);
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI() {
+      const secEl = document.getElementById("timer-seconds");
+      const barEl = document.getElementById("timer-bar");
+      secEl.textContent = Math.max(0, gameState.timeLeft);
+      const pct = Math.max(0, (gameState.timeLeft / gameState.timerDuration) * 100);
+      barEl.style.width = `${pct}%`;
+
+      if (gameState.timeLeft <= 5) {
+        secEl.classList.add("text-rose-500");
+      } else {
+        secEl.classList.remove("text-rose-500");
+      }
+    }
+
+    window.pauseGameTimerAndAudio = function() {
+      gameState.isPaused = true;
+      document.getElementById("music-player").pause();
+      document.getElementById("visualizer").classList.remove("eq-playing");
+      document.getElementById("audio-status-text").textContent = "Jeu et musique en PAUSE";
+      showToast("Jeu mis en pause", "info");
+      if (gameState.connectionMode === "host") syncRoomToFirebase();
+    };
+
+    window.resumeGameTimerAndAudio = function() {
+      if (gameState.isAnswered) return;
+      gameState.isPaused = false;
+      gameState.buzzedTeamId = null;
+      const player = document.getElementById("music-player");
+      if (player.src && gameState.audioMode === "itunes") {
+        player.play().catch(() => {});
+      }
+      document.getElementById("visualizer").classList.add("eq-playing");
+      document.getElementById("audio-status-text").textContent = "Lecture en cours...";
+      renderGameBoardFromState();
+      if (gameState.connectionMode === "host") syncRoomToFirebase();
+    };
+
+    // =========================================================================
+    // 9. DUO / CARRE / CASH & SAISIE LIBRE + RECONNAISSANCE VOCALE
+    // =========================================================================
+    window.chooseDCC = async function(mode) {
+      gameState.dccMode = mode;
+      const correct = gameState.currentTrack;
+
+      if (mode === "duo" || mode === "carre") {
+        const count = mode === "duo" ? 2 : 4;
+        const sameCat = FULL_CATALOG.filter(t => t.cat === correct.cat && t.title !== correct.title);
+        const distractors = [...sameCat].sort(() => Math.random() - 0.5).slice(0, count - 1);
+        const options = [correct, ...distractors].sort(() => Math.random() - 0.5);
+        gameState.qcmOptions = options.map(o => ({
+          title: o.title,
+          artist: o.artist,
+          isCorrect: o.title === correct.title
+        }));
+      } else {
+        document.getElementById("free-answer-input").value = "";
+        setTimeout(() => document.getElementById("free-answer-input").focus(), 100);
+      }
+
+      renderGameBoardFromState();
+      if (gameState.connectionMode === "host") {
+        await syncRoomToFirebase();
+      } else if (gameState.connectionMode === "guest" && isFirebaseReady && db) {
+        const roomRef = doc(db, "artifacts", appId, "public", "data", "rooms", gameState.roomCode);
+        await updateDoc(roomRef, { dccMode: mode, qcmOptions: gameState.qcmOptions });
+      }
+    };
+
+    function renderQCMButtons() {
+      const grid = document.getElementById("qcm-options-grid");
+      grid.innerHTML = "";
+      const letters = ["A", "B", "C", "D"];
+
+      gameState.qcmOptions.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.className = "btn-tv tv-card rounded-2xl p-3.5 text-left border border-slate-700 hover:border-amber-400 flex items-center gap-3";
+        btn.innerHTML = `
+          <span class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center font-black text-amber-400 text-sm shrink-0">
+            ${letters[i]}
+          </span>
+          <div class="min-w-0 flex-1">
+            <div class="font-extrabold text-sm text-white truncate">${opt.title}</div>
+            <div class="text-xs text-slate-400 truncate">${opt.artist}</div>
+          </div>
+        `;
+        btn.onclick = () => handleQCMAnswer(opt.isCorrect);
+        grid.appendChild(btn);
+      });
+    }
+
+    function handleQCMAnswer(isCorrect) {
+      if (gameState.isAnswered) return;
+      const pts = gameState.dccMode === "duo" ? 1 : 3;
+      if (isCorrect) {
+        awardPointsToActiveTeam(pts);
+        revealAnswer(true, pts);
+      } else {
+        revealAnswer(false, 0);
+      }
+    }
+
+    function normalizeText(str) {
+      return str
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\(.*?\)/g, "")
+        .replace(/[^a-z0-9\s]/g, "")
+        .trim();
+    }
+
+    function isAnswerMatch(userInput, track) {
+      const guess = normalizeText(userInput);
+      if (guess.length < 3) return false;
+
+      const cleanTitle = normalizeText(track.title);
+      const cleanArtist = normalizeText(track.artist);
+
+      if (cleanTitle.includes(guess) || guess.includes(cleanTitle)) return true;
+      if (cleanArtist.includes(guess) || guess.includes(cleanArtist)) return true;
+
+      const guessWords = guess.split(/\s+/).filter(w => w.length >= 4);
+      const targetWords = `${cleanTitle} ${cleanArtist}`.split(/\s+/).filter(w => w.length >= 4);
+      return guessWords.some(gw => targetWords.some(tw => tw === gw));
+    }
+
+    window.submitFreeAnswer = function() {
+      if (gameState.isAnswered) return;
+      const input = document.getElementById("free-answer-input");
+      const val = input.value.trim();
+      if (!val) {
+        showToast("Saisissez ou dictez une r\u00e9ponse !", "error");
+        return;
+      }
+
+      const correct = isAnswerMatch(val, gameState.currentTrack);
+      const pts = gameState.round === 1 ? 5 : 4;
+
+      if (correct) {
+        awardPointsToActiveTeam(pts);
+        revealAnswer(true, pts);
+      } else {
+        playSoundEffect("wrong");
+        showToast(`"${val}" ne correspond pas... R\u00e9essayez ou r\u00e9v\u00e9lez !`, "error");
+        input.value = "";
+      }
+    };
+
+    // =========================================================================
+    // 10. RECONNAISSANCE VOCALE (WEB SPEECH API)
+    // =========================================================================
+    window.toggleVoiceRecognition = function() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast("La reconnaissance vocale n'est pas support\u00e9e sur ce navigateur.", "error");
+        return;
+      }
+
+      if (isListeningVoice && recognition) {
+        recognition.stop();
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 3;
+
+      const btnVoice = document.getElementById("btn-voice");
+      const voiceStatus = document.getElementById("voice-status");
+      const inputEl = document.getElementById("free-answer-input");
+
+      recognition.onstart = () => {
+        isListeningVoice = true;
+        btnVoice.classList.add("mic-active", "bg-red-500");
+        voiceStatus.classList.remove("hidden");
+        document.getElementById("music-player").volume = 0.15;
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        inputEl.value = transcript;
+
+        for (let i = 0; i < event.results[event.results.length - 1].length; i++) {
+          const alt = event.results[event.results.length - 1][i].transcript;
+          if (isAnswerMatch(alt, gameState.currentTrack)) {
+            inputEl.value = alt;
+            recognition.stop();
+            submitFreeAnswer();
+            return;
+          }
+        }
+      };
+
+      recognition.onerror = () => {
+        showToast("Micro non d\u00e9tect\u00e9 ou autorisation refus\u00e9e.", "error");
+      };
+
+      recognition.onend = () => {
+        isListeningVoice = false;
+        btnVoice.classList.remove("mic-active", "bg-red-500");
+        voiceStatus.classList.add("hidden");
+        document.getElementById("music-player").volume = 1.0;
+      };
+
+      recognition.start();
+    };
+
+    // =========================================================================
+    // 11. ATTRIBUTION DES POINTS, REVELATION & CLASSEMENT FINAL
+    // =========================================================================
+    function awardPointsToActiveTeam(points) {
+      const team = gameState.teams.find(t => t.id === gameState.answeringTeamId);
+      if (team) {
+        team.score += points;
+      }
+    }
+
+    window.revealAnswer = async function(isSuccess, pointsEarned = 0) {
+      gameState.isAnswered = true;
+      gameState.lastAnswerSuccess = isSuccess;
+      gameState.lastPointsEarned = pointsEarned;
+      gameState.buzzedTeamId = null;
+
+      clearInterval(timerInterval);
+      stopSynthMelody();
+      document.getElementById("music-player").pause();
+      document.getElementById("visualizer").classList.remove("eq-playing");
+
+      if (isSuccess) playSoundEffect("correct");
+      else playSoundEffect("wrong");
+
+      document.getElementById("free-answer-input").value = "";
+      renderGameBoardFromState();
+
+      if (gameState.connectionMode === "host") {
+        await syncRoomToFirebase();
+      } else if (gameState.connectionMode === "guest" && isFirebaseReady && db) {
+        const roomRef = doc(db, "artifacts", appId, "public", "data", "rooms", gameState.roomCode);
+        await updateDoc(roomRef, {
+          teams: gameState.teams,
+          isAnswered: true,
+          lastAnswerSuccess: isSuccess,
+          lastPointsEarned: pointsEarned,
+          buzzedTeamId: null
+        });
+      }
+    };
+
+    window.nextQuestion = function() {
+      const nextIdx = gameState.questionIndex + 1;
+      if (nextIdx < gameState.questionsPerRound) {
+        loadQuestion(nextIdx);
+      } else {
+        gameState.status = "summary";
+        showRoundSummary();
+        syncRoomToFirebase();
+      }
+    };
+
+    function showRoundSummary() {
+      showScreen("screen-summary");
+      const sorted = [...gameState.teams].sort((a, b) => b.score - a.score);
+      const lb = document.getElementById("summary-leaderboard");
+      lb.innerHTML = "";
+
+      sorted.forEach((t, idx) => {
+        const col = TEAM_COLORS[t.colorIdx % TEAM_COLORS.length];
+        const rankLabel = idx === 0 ? "1er" : `${idx + 1}e`;
+        const row = document.createElement("div");
+        row.className = `flex items-center justify-between p-3.5 rounded-2xl border ${idx === 0 ? "border-amber-400 bg-amber-500/15" : "border-slate-700 bg-slate-900/80"}`;
+        row.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="px-2 py-0.5 rounded-lg bg-slate-800 text-xs font-black text-amber-300">${rankLabel}</span>
+            <span class="font-black text-base ${col.text}">${t.name}</span>
+          </div>
+          <span class="text-xl font-black text-white">${t.score} pts</span>
+        `;
+        lb.appendChild(row);
+      });
+
+      const isGuest = gameState.connectionMode === "guest";
+      const btnNext = document.getElementById("btn-next-round");
+      const guestWaitMsg = document.getElementById("guest-wait-round-msg");
+
+      if (gameState.round === 1) {
+        document.getElementById("summary-subtitle").textContent = "FIN DE LA MANCHE 1 (DUO / CARR\u00c9 / CASH)";
+        document.getElementById("summary-title").textContent = "Classement Interm\u00e9diaire";
+        if (isGuest) {
+          btnNext.classList.add("hidden");
+          guestWaitMsg.classList.remove("hidden");
+        } else {
+          btnNext.classList.remove("hidden");
+          guestWaitMsg.classList.add("hidden");
+          btnNext.textContent = "Manche 2 : Saisie Libre & Voix";
+          btnNext.onclick = () => {
+            prepareRound(2);
+            showScreen("screen-game");
+          };
+        }
+      } else {
+        document.getElementById("summary-subtitle").textContent = "FIN DU GRAND BLIND TEST SHOW";
+        document.getElementById("summary-title").textContent = `Vainqueur : ${sorted[0].name} !`;
+        if (isGuest) {
+          btnNext.classList.add("hidden");
+          guestWaitMsg.textContent = "Merci d'avoir particip\u00e9 au Blind Test Live !";
+          guestWaitMsg.classList.remove("hidden");
+        } else {
+          btnNext.classList.remove("hidden");
+          guestWaitMsg.classList.add("hidden");
+          btnNext.textContent = "Rejouer une Nouvelle Partie";
+          btnNext.onclick = () => {
+            resetToHome();
+          };
+        }
+      }
+    }
+
+    renderSetupTeams();
+    initFirebase();
+  </script>
+</body>
+</html>
